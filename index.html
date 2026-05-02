@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Republic — Reporte Diario de Visitas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --primary: #1a1a2e;
+      --accent: #e94560;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--gray-900);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      border-radius: 16px 16px 0 0;
+      padding: 28px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header .subtitle {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .header .date-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 10px 18px;
+      text-align: center;
+    }
+
+    .header .date-badge .day {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .header .date-badge .month-year {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .stats-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 18px 32px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-item .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-item .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    .stat-visits .stat-value { color: var(--blue); }
+    .stat-applied .stat-value { color: var(--yellow); }
+    .stat-approved .stat-value { color: var(--green); }
+    .stat-denied .stat-value { color: var(--red); }
+    .stat-sales .stat-value { color: var(--accent); }
+    .stat-revenue .stat-value { color: var(--purple); font-size: 22px; }
+
+    .form-body {
+      background: var(--card);
+      box-shadow: var(--shadow-lg);
+      padding: 24px;
+    }
+
+    /* Visit card */
+    .visit-card {
+      border: 1.5px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .visit-card.empty {
+      background: #fafafa;
+      border-style: dashed;
+    }
+
+    .visit-card.filled {
+      border-color: var(--gray-300);
+    }
+
+    .visit-card.has-sale {
+      border-color: var(--green);
+      background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 80px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .row-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-500);
+      flex-shrink: 0;
+    }
+
+    .visit-card.filled .row-number {
+      background: var(--primary);
+      color: white;
+    }
+
+    .visit-card.has-sale .row-number {
+      background: var(--green);
+      color: white;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .clear-btn {
+      margin-left: auto;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--gray-300);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-size: 18px;
+    }
+
+    .clear-btn:hover {
+      background: var(--red);
+      color: white;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-fni-1 { grid-template-columns: 1fr 1fr 2fr; }
+    .grid-fni-2 { grid-template-columns: 1fr 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--gray-500);
+    }
+
+    .field-input,
+    .field-select {
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 9px;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all 0.15s;
+      background: var(--gray-100);
+      width: 100%;
+    }
+
+    .field-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-color: var(--gray-100);
+      appearance: none;
+      padding-right: 30px;
+    }
+
+    .field-input:focus,
+    .field-select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background-color: white;
+    }
+
+    .field-input::placeholder { color: var(--gray-400); }
+
+    .field-input.money { padding-left: 24px; }
+
+    .money-wrapper { position: relative; }
+
+    .money-wrapper::before {
+      content: '$';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-500);
+      font-weight: 600;
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Toggle */
+    .toggle-group {
+      display: inline-flex;
+      gap: 0;
+      border-radius: 9px;
+      overflow: hidden;
+      border: 1.5px solid var(--gray-200);
+    }
+
+    .toggle-btn {
+      padding: 8px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    .toggle-btn:not(:last-child) { border-right: 1px solid var(--gray-200); }
+
+    .toggle-btn:hover {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .toggle-btn.active-yes,
+    .toggle-btn.active-approved { background: var(--green); color: white; }
+
+    .toggle-btn.active-no,
+    .toggle-btn.active-denied { background: var(--red); color: white; }
+
+    .toggle-btn.active-sale { background: var(--green); color: white; }
+    .toggle-btn.active-nosale { background: var(--red); color: white; }
+
+    /* Field note (helper banner above phone/name) */
+    .field-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #eff6ff;
+      border-left: 3px solid var(--blue);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.45;
+    }
+    .field-note svg {
+      flex-shrink: 0;
+      color: var(--blue);
+      margin-top: 1px;
+    }
+    .field-note strong { color: var(--gray-900); font-weight: 600; }
+
+    /* Required / optional indicators */
+    .req {
+      color: var(--red);
+      margin-left: 2px;
+    }
+    .opt {
+      color: var(--gray-400);
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-left: 4px;
+    }
+
+    /* Invalid state */
+    .field-input.invalid,
+    .field-select.invalid {
+      border-color: var(--red);
+      background-color: #fef2f2;
+    }
+    .toggle-group.invalid {
+      border-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .visit-card.shake {
+      animation: shake 0.4s ease;
+    }
+
+    /* Progressive disclosure: vertical (full width sections) */
+    .step {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease, padding-top 0.25s;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    /* Progressive disclosure: inline (appears horizontally next to siblings) */
+    .step-inline {
+      display: none;
+    }
+
+    .step-inline.show {
+      display: block;
+      animation: stepFadeIn 0.3s ease;
+    }
+
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step.show {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 14px;
+    }
+
+    .step-fni.show {
+      max-height: 500px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--gray-200);
+    }
+
+    .fni-divider-text {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--green);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: flex-end;
+    }
+
+    /* Add card button */
+    .add-card-btn {
+      width: 100%;
+      padding: 18px;
+      border: 2px dashed var(--gray-300);
+      background: transparent;
+      border-radius: 14px;
+      color: var(--gray-500);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .add-card-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--gray-100);
+    }
+
+    .add-card-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Footer */
+    .form-footer {
+      padding: 24px 32px;
+      background: var(--gray-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 16px 16px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit { background: var(--primary); color: white; }
+    .btn-submit:hover {
+      background: #16213e;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--gray-500);
+      border: 1.5px solid var(--gray-300);
+    }
+    .btn-reset:hover { border-color: var(--red); color: var(--red); }
+
+    .footer-note { font-size: 12px; color: var(--gray-400); }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--primary);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Login Screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.3);
+      padding: 44px 36px 36px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-logo {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 32px;
+    }
+
+    .login-card input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      background: var(--gray-100);
+      transition: all 0.15s;
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
+    .login-card input[type="password"]:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+      background: white;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-login:hover {
+      background: #16213e;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .login-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 12px;
+      animation: shake 0.4s ease;
+    }
+
+    .login-hint {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-100);
+      line-height: 1.5;
+    }
+
+    /* User pill in header */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+    }
+
+    .logout-btn:hover { color: white; }
+
+    /* Already Sent Screen */
+    .already-sent {
+      background: white;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 50px 32px 40px;
+      text-align: center;
+    }
+
+    .already-sent-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      color: white;
+    }
+
+    .already-sent h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+
+    .already-sent .sent-by {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 28px;
+    }
+
+    .already-sent-stats {
+      max-width: 500px;
+      margin: 0 auto 28px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: left;
+    }
+
+    .already-sent-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Edit mode banner */
+    .edit-banner {
+      background: #fef3c7;
+      border-bottom: 1px solid #fde68a;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #92400e;
+    }
+
+    .edit-banner strong { color: #78350f; }
+
+    /* Start Screen */
+    .start-screen {
+      background: white;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 60px 32px 50px;
+      text-align: center;
+    }
+
+    .start-screen .start-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .start-screen h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .start-sub {
+      color: var(--gray-500);
+      font-size: 14px;
+      margin: 0 auto 32px;
+      max-width: 460px;
+      line-height: 1.5;
+    }
+
+    .start-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 30px;
+      background: var(--gray-100);
+      padding: 12px 24px;
+      border-radius: 16px;
+    }
+
+    .counter-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      border: none;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .counter-btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .counter-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .counter-value {
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 70px;
+      letter-spacing: -1px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .btn-start {
+      background: var(--primary);
+      color: white;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-start:hover {
+      background: #16213e;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* Footer counter pill */
+    .footer-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .footer-counter.complete {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .footer-counter.incomplete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .footer-counter .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Summary Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 18px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.show .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      padding: 32px 32px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-icon.confirm { background: var(--blue); }
+    .modal-icon.sent { background: var(--green); }
+
+    .modal[data-state="confirm"] .icon-sent,
+    .modal[data-state="confirm"] .title-sent,
+    .modal[data-state="confirm"] .footer-sent { display: none; }
+
+    .modal[data-state="sent"] .icon-confirm,
+    .modal[data-state="sent"] .title-confirm,
+    .modal[data-state="sent"] .footer-confirm { display: none; }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.3px;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    .modal-body {
+      padding: 24px 32px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .summary-stat {
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .summary-stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .summary-stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .summary-stat.highlight {
+      background: #f0fdf4;
+      border: 1.5px solid var(--green);
+    }
+
+    .summary-stat.highlight .summary-stat-value {
+      color: var(--green);
+    }
+
+    .summary-stat.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .sales-section {
+      margin-top: 22px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--gray-500);
+      margin-bottom: 10px;
+    }
+
+    .sale-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #f0fdf4;
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .sale-item.approved {
+      background: #fffbeb;
+      border-left-color: var(--yellow);
+    }
+
+    .sale-item.denied {
+      background: #fef2f2;
+      border-left-color: var(--red);
+    }
+
+    .sale-item:last-child { margin-bottom: 0; }
+
+    .approved-section, .denied-section {
+      margin-top: 22px;
+    }
+
+    .sale-info { flex: 1; min-width: 0; }
+    .sale-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--gray-900);
+    }
+    .sale-detail {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sale-amount {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 15px;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+
+    .modal-footer {
+      padding: 16px 32px 24px;
+      border-top: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .modal-header { padding: 24px 20px 18px; }
+      .modal-body { padding: 18px 20px; }
+      .modal-footer { padding: 14px 20px 20px; }
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .header { padding: 20px; border-radius: 12px 12px 0 0; }
+      .header h1 { font-size: 18px; }
+      .stats-bar { padding: 14px 16px; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .stat-item .stat-value { font-size: 22px; }
+      .stat-revenue .stat-value { font-size: 18px; }
+      .form-body { padding: 14px; }
+      .visit-card { padding: 14px; }
+      .grid-2, .grid-3, .grid-fni-1, .grid-fni-2 { grid-template-columns: 1fr; }
+      .form-footer { flex-direction: column; gap: 12px; padding: 16px; }
+      .form-footer .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-screen" id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">Auto Republic</div>
+      <div class="login-subtitle">Reporte Diario de Visitas</div>
+      <input type="password" id="login-password" placeholder="Tu contraseña" autocomplete="off">
+      <button class="btn-login" onclick="tryLogin()">Iniciar sesión</button>
+      <div class="login-error" id="login-error" style="display:none;">Contraseña incorrecta</div>
+      <div class="login-hint">Cada manager tiene su contraseña única, aunque compartan el usuario de GHL.</div>
+    </div>
+  </div>
+
+  <!-- Main App (hidden until login) -->
+  <div class="container" id="main-container" style="display:none;">
+    <div class="header">
+      <div class="header-brand">
+        <h1>Auto Republic</h1>
+        <div class="subtitle">Reporte Diario de Visitas</div>
+      </div>
+      <div class="header-right">
+        <div class="user-pill">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span id="user-name">—</span>
+          <button class="logout-btn" onclick="logout()" title="Cerrar sesión">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </div>
+        <div class="date-badge">
+          <div class="day" id="date-day"></div>
+          <div class="month-year" id="date-month"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Already Sent Screen -->
+    <div class="already-sent" id="already-sent-screen" style="display:none;">
+      <div class="already-sent-icon">
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h2 id="already-sent-title">Reporte ya enviado</h2>
+      <div class="sent-by" id="already-sent-by">—</div>
+
+      <div class="already-sent-stats" id="already-sent-stats"></div>
+
+      <div class="already-sent-actions">
+        <button class="btn btn-reset" onclick="viewFullSummary()">Ver resumen completo</button>
+        <button class="btn btn-submit" onclick="editReport()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          Editar reporte
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit mode banner -->
+    <div class="edit-banner" id="edit-banner" style="display:none;">
+      <span><strong>Editando reporte enviado</strong> — los cambios sobrescribirán el reporte actual</span>
+      <button class="btn btn-reset" style="padding:6px 12px; font-size:12px;" onclick="cancelEdit()">Cancelar</button>
+    </div>
+
+    <!-- Start Screen -->
+    <div class="start-screen" id="start-screen">
+      <div class="start-icon">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+      </div>
+      <h2>¿Cuántas visitas hubo hoy?</h2>
+      <p class="start-sub">Indica el número total para abrir los espacios correspondientes. Después podrás agregar o quitar visitas si el número cambia.</p>
+      <div class="start-counter">
+        <button class="counter-btn" id="counter-minus" onclick="changeCount(-1)">&minus;</button>
+        <div class="counter-value" id="counter-value">4</div>
+        <button class="counter-btn" id="counter-plus" onclick="changeCount(1)">+</button>
+      </div>
+      <div>
+        <button class="btn-start" onclick="startReport()">
+          Comenzar
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Form (hidden until startReport) -->
+    <div id="main-form" style="display:none;">
+    <div class="stats-bar">
+      <div class="stat-item stat-visits">
+        <div class="stat-value" id="total-visits">0</div>
+        <div class="stat-label">Visitas</div>
+      </div>
+      <div class="stat-item stat-applied">
+        <div class="stat-value" id="total-applied">0</div>
+        <div class="stat-label">Aplicaron</div>
+      </div>
+      <div class="stat-item stat-approved">
+        <div class="stat-value" id="total-approved">0</div>
+        <div class="stat-label">Aprobados</div>
+      </div>
+      <div class="stat-item stat-denied">
+        <div class="stat-value" id="total-denied">0</div>
+        <div class="stat-label">Negados</div>
+      </div>
+      <div class="stat-item stat-sales">
+        <div class="stat-value" id="total-sales">0</div>
+        <div class="stat-label">Ventas</div>
+      </div>
+      <div class="stat-item stat-revenue">
+        <div class="stat-value" id="total-revenue">$0</div>
+        <div class="stat-label">Net profit</div>
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div id="rows-container"></div>
+      <button class="add-card-btn" id="add-btn" onclick="addCard()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar otra visita
+      </button>
+    </div>
+
+    <div class="form-footer">
+      <div class="footer-counter" id="footer-counter">
+        <span class="dot"></span>
+        <span id="footer-counter-text">0 de 0 completas</span>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-reset" onclick="resetForm()">Empezar de nuevo</button>
+        <button class="btn btn-submit" onclick="submitForm()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Enviar reporte
+        </button>
+      </div>
+    </div>
+    </div><!-- /main-form -->
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Summary Modal -->
+  <div class="modal-overlay" id="summary-modal">
+    <div class="modal" data-state="confirm">
+      <div class="modal-header">
+        <div class="modal-icon confirm icon-confirm">
+          <svg width="32" height="32" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div class="modal-icon sent icon-sent">
+          <svg width="32" height="32" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="modal-title title-confirm">Confirmar reporte</div>
+        <div class="modal-title title-sent">Reporte enviado</div>
+        <div class="modal-subtitle" id="summary-date"></div>
+      </div>
+      <div class="modal-body">
+        <div class="summary-grid">
+          <div class="summary-stat">
+            <div class="summary-stat-label">Visitas</div>
+            <div class="summary-stat-value" id="sum-visits">0</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Aplicaron</div>
+            <div class="summary-stat-value" id="sum-applied">0</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Aprobados</div>
+            <div class="summary-stat-value" id="sum-approved">0</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Negados</div>
+            <div class="summary-stat-value" id="sum-denied">0</div>
+          </div>
+          <div class="summary-stat highlight">
+            <div class="summary-stat-label">Ventas</div>
+            <div class="summary-stat-value" id="sum-sales">0</div>
+          </div>
+          <div class="summary-stat highlight">
+            <div class="summary-stat-label">Net profit</div>
+            <div class="summary-stat-value" id="sum-net-profit">$0</div>
+          </div>
+          <div class="summary-stat full-width">
+            <div class="summary-stat-label">Down payment colectado</div>
+            <div class="summary-stat-value" id="sum-down-collected">$0</div>
+          </div>
+        </div>
+
+        <div class="sales-section" id="sales-section" style="display:none;">
+          <div class="section-title">Ventas del día</div>
+          <div id="sales-list"></div>
+        </div>
+
+        <div class="approved-section" id="approved-section" style="display:none;">
+          <div class="section-title">Aprobados no cerrados del día</div>
+          <div id="approved-list"></div>
+        </div>
+
+        <div class="denied-section" id="denied-section" style="display:none;">
+          <div class="section-title">Negados del día</div>
+          <div id="denied-list"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-reset footer-confirm" onclick="closeModal()">Volver a editar</button>
+        <button class="btn btn-submit footer-confirm" onclick="confirmAndSend()">Confirmar y enviar</button>
+        <button class="btn btn-submit footer-sent" onclick="closeAndReset()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MAX_CARDS = 20;
+    const PREDEFINED_LENDERS = ['CapitalOne','Carvant Financial LLC','Exeter Finance','Global Lending Services','Lendbuzz Funding LLC','Lobel Financial','OneMain Financial Group LLC','Strike Acceptance','Veros Credit LLC','Western Funding','Westlake Financial','Cash'];
+
+    // MOCK auth — replace with backend call when ready
+    const USERS = [
+      { password: 'carlos2026', name: 'Carlos' },
+      { password: 'maria2026', name: 'María' },
+      { password: 'admin2026', name: 'Admin' }
+    ];
+
+    const rows = [];
+    let visitCount = 4;
+    let currentUser = null;
+    let editMode = false;
+
+    function todayKey() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function reportStorageKey(date, user) {
+      return `ar_report_${date}_${user}`;
+    }
+
+    function saveReportToStorage(data) {
+      const key = reportStorageKey(data.date, currentUser);
+      const record = { ...data, submitted_at: new Date().toISOString(), submitted_by: currentUser };
+      localStorage.setItem(key, JSON.stringify(record));
+      return record;
+    }
+
+    function loadTodaysReport() {
+      if (!currentUser) return null;
+      const raw = localStorage.getItem(reportStorageKey(todayKey(), currentUser));
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function tryLogin() {
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      const match = USERS.find(u => u.password === password);
+      if (!match) {
+        errorEl.style.display = 'block';
+        errorEl.classList.remove('shake');
+        void errorEl.offsetWidth;
+        errorEl.classList.add('shake');
+        return;
+      }
+      currentUser = match.name;
+      localStorage.setItem('ar_user', currentUser);
+      errorEl.style.display = 'none';
+      document.getElementById('login-password').value = '';
+      enterApp();
+    }
+
+    function logout() {
+      if (!confirm('¿Cerrar sesión?')) return;
+      localStorage.removeItem('ar_user');
+      currentUser = null;
+      editMode = false;
+      document.getElementById('main-container').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-password').focus();
+    }
+
+    function enterApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-container').style.display = 'block';
+      document.getElementById('user-name').textContent = currentUser;
+      const existing = loadTodaysReport();
+      if (existing) {
+        showAlreadySent(existing);
+      } else {
+        showStartScreen();
+      }
+    }
+
+    function showAlreadySent(report) {
+      editMode = false;
+      document.getElementById('already-sent-screen').style.display = 'block';
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('main-form').style.display = 'none';
+      document.getElementById('edit-banner').style.display = 'none';
+
+      const visits = report.visits;
+      const sales = visits.filter(v => v.sale === true);
+      const approved = visits.filter(v => v.result === 'approved');
+      const denied = visits.filter(v => v.result === 'denied');
+      const netProfit = sales.reduce((s, v) => s + (v.net_profit || 0), 0);
+
+      document.getElementById('already-sent-title').textContent = `Reporte del ${formatDateLong(report.date)}`;
+      const time = new Date(report.submitted_at).toLocaleTimeString('es-US', {hour: 'numeric', minute: '2-digit'});
+      document.getElementById('already-sent-by').textContent = `Enviado por ${escapeHtml(report.submitted_by)} a las ${time}`;
+
+      document.getElementById('already-sent-stats').innerHTML = `
+        <div class="summary-stat"><div class="summary-stat-label">Visitas</div><div class="summary-stat-value">${visits.length}</div></div>
+        <div class="summary-stat"><div class="summary-stat-label">Aprobados</div><div class="summary-stat-value">${approved.length}</div></div>
+        <div class="summary-stat"><div class="summary-stat-label">Negados</div><div class="summary-stat-value">${denied.length}</div></div>
+        <div class="summary-stat highlight"><div class="summary-stat-label">Ventas</div><div class="summary-stat-value">${sales.length}</div></div>
+        <div class="summary-stat highlight" style="grid-column: span 2;"><div class="summary-stat-label">Net profit</div><div class="summary-stat-value">${fmtMoney(netProfit)}</div></div>
+      `;
+    }
+
+    function viewFullSummary() {
+      const report = loadTodaysReport();
+      if (!report) return;
+      pendingPayload = report;
+      showSummaryModal(report, 'sent');
+    }
+
+    function editReport() {
+      const saved = loadTodaysReport();
+      if (!saved) return;
+      editMode = true;
+      document.getElementById('already-sent-screen').style.display = 'none';
+      document.getElementById('main-form').style.display = 'block';
+      document.getElementById('edit-banner').style.display = 'flex';
+
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      saved.visits.forEach((v, i) => {
+        createCard(i);
+        Object.assign(rows[i], {
+          phone: v.phone || '',
+          name: v.name || '',
+          source: v.source || '',
+          setter: v.setter || '',
+          closer: v.closer || '',
+          closer2: v.closer2 || '',
+          applied: v.applied,
+          result: v.result,
+          sale: v.sale,
+          dealNumber: v.deal_number || '',
+          netProfit: v.net_profit != null ? String(v.net_profit) : '',
+          lender: v.lender || '',
+          vehicle: v.vehicle || '',
+          downCollected: v.down_collected != null ? String(v.down_collected) : '',
+          downDeferred: v.down_deferred != null ? String(v.down_deferred) : ''
+        });
+        syncCardUI(i);
+      });
+      visitCount = saved.visits.length;
+      updateAddBtn();
+      updateStats();
+    }
+
+    function cancelEdit() {
+      const existing = loadTodaysReport();
+      if (existing) showAlreadySent(existing);
+      else showStartScreen();
+    }
+
+    function initDate() {
+      const now = new Date();
+      const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      document.getElementById('date-day').textContent = now.getDate();
+      document.getElementById('date-month').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+    }
+
+    function changeCount(delta) {
+      visitCount = Math.max(1, Math.min(MAX_CARDS, visitCount + delta));
+      document.getElementById('counter-value').textContent = visitCount;
+      document.getElementById('counter-minus').disabled = visitCount <= 1;
+      document.getElementById('counter-plus').disabled = visitCount >= MAX_CARDS;
+    }
+
+    function startReport() {
+      editMode = false;
+      document.getElementById('already-sent-screen').style.display = 'none';
+      document.getElementById('edit-banner').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('main-form').style.display = 'block';
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      for (let i = 0; i < visitCount; i++) createCard(i);
+      updateAddBtn();
+      updateStats();
+    }
+
+    function showStartScreen() {
+      editMode = false;
+      document.getElementById('already-sent-screen').style.display = 'none';
+      document.getElementById('edit-banner').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'block';
+      document.getElementById('main-form').style.display = 'none';
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      changeCount(0);
+    }
+
+    function createCard(index) {
+      rows.push({
+        phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
+        applied: null, result: null, sale: null,
+        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', dealNumber: ''
+      });
+
+      const card = document.createElement('div');
+      card.className = 'visit-card empty';
+      card.dataset.index = index;
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="row-number">${index + 1}</div>
+          <div class="card-title">Visita ${index + 1}</div>
+          <button class="clear-btn" onclick="removeCard(${index})" title="Eliminar visita">&times;</button>
+        </div>
+
+        <!-- Step 1: Phone + Name (always visible) -->
+        <div class="field-note">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4M12 8h.01"/>
+          </svg>
+          <span>Si la visita vino de <strong>Marketing</strong> o <strong>Facebook Marketplace</strong>, debe existir un appointment en el CRM — usa el <strong>teléfono y nombre del lead</strong> y debe hacer match con la cita del calendario (aunque el comprador final haya sido otro, ej. cosigner). Si fue <strong>walk-in (Source: Others)</strong>, no hay appointment al cual hacer match — usa los datos del cliente.</span>
+        </div>
+        <div class="field-grid grid-2">
+          <div class="field">
+            <label class="field-label"># de teléfono<span class="req">*</span></label>
+            <input type="tel" class="field-input" data-field="phone" placeholder="000-000-0000" maxlength="12"
+              oninput="updatePhone(${index}, this)"
+              onfocus="activateRow(${index})">
+          </div>
+          <div class="field">
+            <label class="field-label">Nombre<span class="req">*</span></label>
+            <input type="text" class="field-input" data-field="name" placeholder="Nombre completo"
+              oninput="updateRow(${index}, 'name', this.value)"
+              onfocus="activateRow(${index})">
+          </div>
+        </div>
+
+        <!-- Step 2: Attribution (Source / Setter / Closer #1 / Closer #2) -->
+        <div class="step" id="step-attr-${index}">
+          <div class="field-grid grid-2" style="margin-bottom:12px;">
+            <div class="field">
+              <label class="field-label">Source<span class="req">*</span></label>
+              <select class="field-select" data-field="source" onchange="updateRow(${index}, 'source', this.value)">
+                <option value="">Seleccionar...</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Facebook Marketplace">Facebook Marketplace</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Setter<span class="req">*</span><span class="opt">(N/A si no aplica)</span></label>
+              <input type="text" class="field-input" data-field="setter" placeholder="Nombre del setter o N/A"
+                oninput="updateRow(${index}, 'setter', this.value)">
+            </div>
+          </div>
+          <div class="field-grid grid-2">
+            <div class="field">
+              <label class="field-label">Closer<span class="req">*</span></label>
+              <input type="text" class="field-input" data-field="closer" placeholder="Nombre del closer"
+                oninput="updateRow(${index}, 'closer', this.value)">
+            </div>
+            <div class="field">
+              <label class="field-label">Closer #2<span class="req">*</span><span class="opt">(N/A si no aplica)</span></label>
+              <input type="text" class="field-input" data-field="closer2" placeholder="Nombre del closer #2 o N/A"
+                oninput="updateRow(${index}, 'closer2', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Aplicó -->
+        <div class="step" id="step-applied-${index}">
+          <div class="status-row">
+            <div class="field">
+              <label class="field-label">Aplicó<span class="req">*</span></label>
+              <div class="toggle-group" data-toggle="applied">
+                <button type="button" class="toggle-btn" onclick="toggleApplied(${index}, true)">Sí</button>
+                <button type="button" class="toggle-btn" onclick="toggleApplied(${index}, false)">No</button>
+              </div>
+            </div>
+
+            <!-- Step 4: Aprobado / Negado -->
+            <div class="step-inline" id="step-result-${index}">
+              <div class="field">
+                <label class="field-label">Aprobado / Negado<span class="req">*</span></label>
+                <div class="toggle-group" data-toggle="result">
+                  <button type="button" class="toggle-btn" onclick="toggleResult(${index}, 'approved')">Aprobado</button>
+                  <button type="button" class="toggle-btn" onclick="toggleResult(${index}, 'denied')">Negado</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: Venta -->
+            <div class="step-inline" id="step-sale-${index}">
+              <div class="field">
+                <label class="field-label">Venta<span class="req">*</span></label>
+                <div class="toggle-group" data-toggle="sale">
+                  <button type="button" class="toggle-btn" onclick="toggleSale(${index}, true)">Sí</button>
+                  <button type="button" class="toggle-btn" onclick="toggleSale(${index}, false)">No</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5b: DealerCenter Deal # -->
+            <div class="step-inline" id="step-deal-${index}" style="flex:1; min-width:200px;">
+              <div class="field">
+                <label class="field-label">DealerCenter Deal #<span class="req">*</span></label>
+                <input type="text" class="field-input" data-field="dealNumber" placeholder="Número de deal"
+                  oninput="updateRow(${index}, 'dealNumber', this.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6: F&I details -->
+        <div class="step step-fni" id="step-fni-${index}">
+          <span class="fni-divider-text">Detalles de la venta</span>
+          <div class="field-grid grid-fni-1" style="margin-bottom:12px;">
+            <div class="field">
+              <label class="field-label">Net profit<span class="req">*</span></label>
+              <div class="money-wrapper">
+                <input type="text" inputmode="numeric" class="field-input money" data-field="netProfit" placeholder="0.00"
+                  oninput="updateMoney(${index}, 'netProfit', this)">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Lender<span class="req">*</span></label>
+              <select class="field-select" data-field="lender" id="lender-select-${index}"
+                onchange="updateLender(${index}, this.value)">
+                <option value="">Seleccionar...</option>
+                <option>CapitalOne</option>
+                <option>Carvant Financial LLC</option>
+                <option>Exeter Finance</option>
+                <option>Global Lending Services</option>
+                <option>Lendbuzz Funding LLC</option>
+                <option>Lobel Financial</option>
+                <option>OneMain Financial Group LLC</option>
+                <option>Strike Acceptance</option>
+                <option>Veros Credit LLC</option>
+                <option>Western Funding</option>
+                <option>Westlake Financial</option>
+                <option value="Cash">Cash</option>
+                <option value="__other__">Other (especificar)</option>
+              </select>
+              <input type="text" class="field-input lender-other" id="lender-other-${index}"
+                placeholder="Especifica el lender"
+                style="display:none; margin-top:8px;"
+                oninput="updateLenderOther(${index}, this.value)">
+            </div>
+            <div class="field">
+              <label class="field-label">Vehículo vendido<span class="req">*</span></label>
+              <input type="text" class="field-input" data-field="vehicle" placeholder="Año Marca Modelo"
+                oninput="updateRow(${index}, 'vehicle', this.value)">
+            </div>
+          </div>
+          <div class="field-grid grid-fni-2">
+            <div class="field">
+              <label class="field-label">Down payment colectado<span class="req">*</span></label>
+              <div class="money-wrapper">
+                <input type="text" inputmode="numeric" class="field-input money" data-field="downCollected" placeholder="0.00"
+                  oninput="updateMoney(${index}, 'downCollected', this)">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Down payment diferido<span class="req">*</span></label>
+              <div class="money-wrapper">
+                <input type="text" inputmode="numeric" class="field-input money" data-field="downDeferred" placeholder="0.00"
+                  oninput="updateMoney(${index}, 'downDeferred', this)">
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('rows-container').appendChild(card);
+      checkProgress(index);
+    }
+
+    function getCard(i) { return document.querySelector(`.visit-card[data-index="${i}"]`); }
+
+    function activateRow(index) {
+      const c = getCard(index);
+      c.classList.remove('empty');
+      c.classList.add('filled');
+    }
+
+    function setStep(id, show) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (show) el.classList.add('show'); else el.classList.remove('show');
+    }
+
+    function checkProgress(i) {
+      const r = rows[i];
+
+      // Step 2: phone (10 digits) AND name filled → show attribution
+      const phoneDigits = r.phone.replace(/\D/g, '');
+      const showAttr = phoneDigits.length === 10 && r.name.trim();
+      setStep(`step-attr-${i}`, showAttr);
+
+      // Step 3: closer filled → show aplicó
+      const showApplied = showAttr && r.closer.trim();
+      setStep(`step-applied-${i}`, showApplied);
+
+      // Step 4: aplicó === true → show resultado
+      const showResult = showApplied && r.applied === true;
+      setStep(`step-result-${i}`, showResult);
+
+      // Step 5: result === approved → show venta
+      const showSale = showResult && r.result === 'approved';
+      setStep(`step-sale-${i}`, showSale);
+
+      // Step 5b + 6: venta === true → show Deal # and F&I
+      const showFni = showSale && r.sale === true;
+      setStep(`step-deal-${i}`, showFni);
+      setStep(`step-fni-${i}`, showFni);
+
+      // Visual state on card
+      const card = getCard(i);
+      if (showFni) card.classList.add('has-sale');
+      else card.classList.remove('has-sale');
+    }
+
+    function clearFieldInvalid(index, field) {
+      const card = getCard(index);
+      if (!card) return;
+      const el = card.querySelector(`[data-field="${field}"]`);
+      if (el) el.classList.remove('invalid');
+    }
+
+    function clearToggleInvalid(index, key) {
+      const card = getCard(index);
+      if (!card) return;
+      const tg = card.querySelector(`[data-toggle="${key}"]`);
+      if (tg) tg.classList.remove('invalid');
+    }
+
+    function updateRow(index, field, value) {
+      rows[index][field] = value;
+      if (typeof value === 'string' && value.trim()) activateRow(index);
+      clearFieldInvalid(index, field);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function updatePhone(index, input) {
+      const digits = input.value.replace(/\D/g, '').slice(0, 10);
+      let formatted = digits;
+      if (digits.length > 6) {
+        formatted = `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        formatted = `${digits.slice(0,3)}-${digits.slice(3)}`;
+      }
+      input.value = formatted;
+      rows[index].phone = formatted;
+      if (formatted) activateRow(index);
+      clearFieldInvalid(index, 'phone');
+      checkProgress(index);
+      updateStats();
+    }
+
+    function updateLender(index, value) {
+      const otherInput = document.getElementById(`lender-other-${index}`);
+      if (value === '__other__') {
+        otherInput.style.display = 'block';
+        rows[index].lender = otherInput.value || '';
+        otherInput.focus();
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.value = '';
+        rows[index].lender = value;
+      }
+      activateRow(index);
+      clearFieldInvalid(index, 'lender');
+      updateStats();
+    }
+
+    function updateLenderOther(index, value) {
+      rows[index].lender = value;
+      activateRow(index);
+      clearFieldInvalid(index, 'lender');
+      updateStats();
+    }
+
+    function updateMoney(index, field, input) {
+      const cleaned = input.value.replace(/[^0-9.]/g, '');
+      const parts = cleaned.split('.');
+      const formatted = parts.length > 1 ? parts[0] + '.' + parts[1].slice(0,2) : cleaned;
+      input.value = formatted;
+      rows[index][field] = formatted;
+      activateRow(index);
+      clearFieldInvalid(index, field);
+      updateStats();
+    }
+
+    function toggleApplied(index, value) {
+      rows[index].applied = rows[index].applied === value ? null : value;
+      activateRow(index);
+      if (rows[index].applied !== null) clearToggleInvalid(index, 'applied');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function toggleResult(index, value) {
+      rows[index].result = rows[index].result === value ? null : value;
+      activateRow(index);
+      if (rows[index].result !== null) clearToggleInvalid(index, 'result');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function toggleSale(index, value) {
+      rows[index].sale = rows[index].sale === value ? null : value;
+      activateRow(index);
+      if (rows[index].sale !== null) clearToggleInvalid(index, 'sale');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function renderToggles(index) {
+      const card = getCard(index);
+      const r = rows[index];
+
+      const a = card.querySelector('[data-toggle="applied"]').querySelectorAll('.toggle-btn');
+      a[0].className = 'toggle-btn' + (r.applied === true ? ' active-yes' : '');
+      a[1].className = 'toggle-btn' + (r.applied === false ? ' active-no' : '');
+
+      const res = card.querySelector('[data-toggle="result"]').querySelectorAll('.toggle-btn');
+      res[0].className = 'toggle-btn' + (r.result === 'approved' ? ' active-approved' : '');
+      res[1].className = 'toggle-btn' + (r.result === 'denied' ? ' active-denied' : '');
+
+      const s = card.querySelector('[data-toggle="sale"]').querySelectorAll('.toggle-btn');
+      s[0].className = 'toggle-btn' + (r.sale === true ? ' active-sale' : '');
+      s[1].className = 'toggle-btn' + (r.sale === false ? ' active-nosale' : '');
+    }
+
+    function clearRow(index) {
+      rows[index] = {
+        phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
+        applied: null, result: null, sale: null,
+        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', dealNumber: ''
+      };
+      clearInvalid(index);
+      const card = getCard(index);
+      card.classList.add('empty');
+      card.classList.remove('filled', 'has-sale');
+      card.querySelectorAll('.field-input').forEach(i => i.value = '');
+      card.querySelectorAll('.field-select').forEach(s => s.value = '');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function addCard() {
+      if (rows.length >= MAX_CARDS) return;
+      createCard(rows.length);
+      updateAddBtn();
+      updateStats();
+      const newCard = document.querySelector(`.visit-card[data-index="${rows.length - 1}"]`);
+      newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function updateAddBtn() {
+      const btn = document.getElementById('add-btn');
+      btn.disabled = rows.length >= MAX_CARDS;
+      if (rows.length >= MAX_CARDS) {
+        btn.innerHTML = `Máximo de ${MAX_CARDS} visitas alcanzado`;
+      }
+    }
+
+    function isFilled(r) {
+      return r.phone.trim() || r.name.trim() || r.applied !== null || r.result !== null || r.sale !== null;
+    }
+
+    function isComplete(r) {
+      return validateRow(r).length === 0;
+    }
+
+    function updateStats() {
+      const filled = rows.filter(isFilled);
+      const applied = rows.filter(r => r.applied === true);
+      const approved = rows.filter(r => r.result === 'approved');
+      const denied = rows.filter(r => r.result === 'denied');
+      const sales = rows.filter(r => r.sale === true);
+      const revenue = sales.reduce((sum, r) => sum + (parseFloat(r.netProfit) || 0), 0);
+      const completed = rows.filter(isComplete).length;
+
+      document.getElementById('total-visits').textContent = filled.length;
+      document.getElementById('total-applied').textContent = applied.length;
+      document.getElementById('total-approved').textContent = approved.length;
+      document.getElementById('total-denied').textContent = denied.length;
+      document.getElementById('total-sales').textContent = sales.length;
+      document.getElementById('total-revenue').textContent = '$' + revenue.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+      const counter = document.getElementById('footer-counter');
+      const counterText = document.getElementById('footer-counter-text');
+      counterText.textContent = `${completed} de ${rows.length} completas`;
+      counter.classList.remove('complete', 'incomplete');
+      if (rows.length > 0 && completed === rows.length) counter.classList.add('complete');
+      else if (rows.length > 0) counter.classList.add('incomplete');
+    }
+
+    function resetForm() {
+      if (!confirm('¿Empezar de nuevo? Se perderán todos los datos.')) return;
+      showStartScreen();
+      showToast('Formulario reiniciado');
+    }
+
+    function removeCard(index) {
+      const r = rows[index];
+      if (isFilled(r) && !confirm('Esta visita tiene datos. ¿Eliminarla?')) return;
+      if (rows.length <= 1) {
+        showToast('Debe quedar al menos una visita');
+        return;
+      }
+      rows.splice(index, 1);
+      rebuildAllCards();
+      showToast('Visita eliminada');
+    }
+
+    function rebuildAllCards() {
+      const saved = rows.map(r => ({...r}));
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      saved.forEach((d, i) => {
+        createCard(i);
+        Object.assign(rows[i], d);
+        syncCardUI(i);
+      });
+      updateAddBtn();
+      updateStats();
+    }
+
+    function syncCardUI(index) {
+      const card = getCard(index);
+      const r = rows[index];
+
+      ['phone','name','source','setter','closer','closer2','vehicle','dealNumber','netProfit','downCollected','downDeferred'].forEach(f => {
+        const el = card.querySelector(`[data-field="${f}"]`);
+        if (el && r[f] !== undefined && r[f] !== null) el.value = r[f];
+      });
+
+      // Lender: select + optional other input
+      const lenderSel = card.querySelector('[data-field="lender"]');
+      const lenderOther = card.querySelector('.lender-other');
+      if (r.lender && PREDEFINED_LENDERS.includes(r.lender)) {
+        lenderSel.value = r.lender;
+        lenderOther.style.display = 'none';
+        lenderOther.value = '';
+      } else if (r.lender) {
+        lenderSel.value = '__other__';
+        lenderOther.style.display = 'block';
+        lenderOther.value = r.lender;
+      } else {
+        lenderSel.value = '';
+        lenderOther.style.display = 'none';
+        lenderOther.value = '';
+      }
+
+      if (isFilled(r)) {
+        card.classList.remove('empty');
+        card.classList.add('filled');
+      }
+
+      renderToggles(index);
+      checkProgress(index);
+    }
+
+    function validateRow(r) {
+      const errs = [];
+      const phoneDigits = r.phone.replace(/\D/g, '');
+      if (phoneDigits.length !== 10) errs.push('phone');
+      if (!r.name.trim()) errs.push('name');
+      if (!r.source) errs.push('source');
+      if (!r.setter.trim()) errs.push('setter');
+      if (!r.closer.trim()) errs.push('closer');
+      if (!r.closer2.trim()) errs.push('closer2');
+      if (r.applied === null) errs.push('applied');
+
+      if (r.applied === true) {
+        if (r.result === null) errs.push('result');
+        if (r.result === 'approved') {
+          if (r.sale === null) errs.push('sale');
+          if (r.sale === true) {
+            if (!r.dealNumber.trim()) errs.push('dealNumber');
+            const amt = parseFloat(r.netProfit);
+            if (!amt || amt <= 0) errs.push('netProfit');
+            if (!r.lender.trim()) errs.push('lender');
+            if (!r.vehicle.trim()) errs.push('vehicle');
+            if (r.downCollected === '' || r.downCollected === null || r.downCollected === undefined) errs.push('downCollected');
+            if (r.downDeferred === '' || r.downDeferred === null || r.downDeferred === undefined) errs.push('downDeferred');
+          }
+        }
+      }
+      return errs;
+    }
+
+    function clearInvalid(index) {
+      const card = getCard(index);
+      if (!card) return;
+      card.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+    }
+
+    function applyInvalid(index, errs) {
+      const card = getCard(index);
+      clearInvalid(index);
+      errs.forEach(key => {
+        if (key === 'applied' || key === 'result' || key === 'sale') {
+          const tg = card.querySelector(`[data-toggle="${key}"]`);
+          if (tg) tg.classList.add('invalid');
+        } else {
+          const el = card.querySelector(`[data-field="${key}"]`);
+          if (el) el.classList.add('invalid');
+        }
+      });
+    }
+
+    function submitForm() {
+      if (rows.length === 0) {
+        showToast('No hay visitas registradas');
+        return;
+      }
+
+      // Clear all invalid markers first
+      for (let i = 0; i < rows.length; i++) clearInvalid(i);
+
+      // Validate ALL cards (every visit must be complete)
+      let firstBadIndex = -1;
+      let badCount = 0;
+      for (let i = 0; i < rows.length; i++) {
+        const errs = validateRow(rows[i]);
+        if (errs.length > 0) {
+          applyInvalid(i, errs);
+          if (firstBadIndex === -1) firstBadIndex = i;
+          badCount++;
+        }
+      }
+
+      if (firstBadIndex !== -1) {
+        const card = getCard(firstBadIndex);
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        const completed = rows.length - badCount;
+        showToast(`${completed} de ${rows.length} completas — falta visita ${firstBadIndex + 1}`);
+        return;
+      }
+
+      const filled = rows;
+
+      const data = {
+        date: new Date().toISOString().split('T')[0],
+        location: 'Auto Republic',
+        visits: filled.map(r => ({
+          phone: r.phone,
+          name: r.name,
+          source: r.source,
+          setter: r.setter,
+          closer: r.closer,
+          closer2: r.closer2,
+          applied: r.applied,
+          result: r.result,
+          sale: r.sale,
+          deal_number: r.dealNumber,
+          net_profit: parseFloat(r.netProfit) || null,
+          lender: r.lender,
+          vehicle: r.vehicle,
+          down_collected: r.downCollected !== '' ? parseFloat(r.downCollected) : null,
+          down_deferred: r.downDeferred !== '' ? parseFloat(r.downDeferred) : null
+        }))
+      };
+
+      pendingPayload = data;
+      showSummaryModal(data, 'confirm');
+    }
+
+    let pendingPayload = null;
+
+    function confirmAndSend() {
+      if (!pendingPayload) return;
+      // TODO: replace localStorage save with real API POST when backend is ready
+      const saved = saveReportToStorage(pendingPayload);
+      console.log('Payload para API:', JSON.stringify(saved, null, 2));
+      pendingPayload = saved;
+      const modal = document.querySelector('#summary-modal .modal');
+      modal.setAttribute('data-state', 'sent');
+      const icon = modal.querySelector('.icon-sent');
+      icon.style.animation = 'none';
+      void icon.offsetWidth;
+      icon.style.animation = '';
+    }
+
+    function closeModal() {
+      document.getElementById('summary-modal').classList.remove('show');
+      pendingPayload = null;
+    }
+
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return '';
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    function formatDateLong(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      return `${d.getDate()} de ${months[d.getMonth()]}, ${d.getFullYear()}`;
+    }
+
+    function fmtMoney(n) {
+      return '$' + (n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
+
+    function isNA(s) {
+      if (!s) return true;
+      const t = s.trim().toLowerCase();
+      return t === '' || t === 'n/a' || t === 'na';
+    }
+
+    function showSummaryModal(data, state) {
+      const visits = data.visits;
+      const applied = visits.filter(v => v.applied === true);
+      const approved = visits.filter(v => v.result === 'approved');
+      const denied = visits.filter(v => v.result === 'denied');
+      const sales = visits.filter(v => v.sale === true);
+      const netProfit = sales.reduce((s, v) => s + (v.net_profit || 0), 0);
+      const downCollected = sales.reduce((s, v) => s + (v.down_collected || 0), 0);
+
+      document.getElementById('summary-date').textContent = formatDateLong(data.date);
+      document.getElementById('sum-visits').textContent = visits.length;
+      document.getElementById('sum-applied').textContent = applied.length;
+      document.getElementById('sum-approved').textContent = approved.length;
+      document.getElementById('sum-denied').textContent = denied.length;
+      document.getElementById('sum-sales').textContent = sales.length;
+      document.getElementById('sum-net-profit').textContent = fmtMoney(netProfit);
+      document.getElementById('sum-down-collected').textContent = fmtMoney(downCollected);
+
+      const closerOf = v => isNA(v.closer2)
+        ? escapeHtml(v.closer)
+        : `${escapeHtml(v.closer)} & ${escapeHtml(v.closer2)}`;
+      const setterOf = v => isNA(v.setter) ? '—' : escapeHtml(v.setter);
+
+      const salesSec = document.getElementById('sales-section');
+      const salesList = document.getElementById('sales-list');
+      if (sales.length > 0) {
+        salesSec.style.display = 'block';
+        salesList.innerHTML = sales.map(s => `
+          <div class="sale-item">
+            <div class="sale-info">
+              <div class="sale-name">${escapeHtml(s.name)}</div>
+              <div class="sale-detail">${escapeHtml(s.vehicle)} · Deal #${escapeHtml(s.deal_number)} · ${escapeHtml(s.lender)}</div>
+              <div class="sale-detail">${escapeHtml(s.source)} · Setter: ${setterOf(s)} · Closer: ${closerOf(s)}</div>
+            </div>
+            <div class="sale-amount">${fmtMoney(s.net_profit)}</div>
+          </div>
+        `).join('');
+      } else {
+        salesSec.style.display = 'none';
+      }
+
+      const approvedNoSale = visits.filter(v => v.result === 'approved' && v.sale === false);
+      const apSec = document.getElementById('approved-section');
+      const apList = document.getElementById('approved-list');
+      if (approvedNoSale.length > 0) {
+        apSec.style.display = 'block';
+        apList.innerHTML = approvedNoSale.map(v => `
+          <div class="sale-item approved">
+            <div class="sale-info">
+              <div class="sale-name">${escapeHtml(v.name)}</div>
+              <div class="sale-detail">${escapeHtml(v.phone)} · ${escapeHtml(v.source)} · Closer: ${closerOf(v)}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        apSec.style.display = 'none';
+      }
+
+      const deniedList = visits.filter(v => v.result === 'denied');
+      const dnSec = document.getElementById('denied-section');
+      const dnList = document.getElementById('denied-list');
+      if (deniedList.length > 0) {
+        dnSec.style.display = 'block';
+        dnList.innerHTML = deniedList.map(v => `
+          <div class="sale-item denied">
+            <div class="sale-info">
+              <div class="sale-name">${escapeHtml(v.name)}</div>
+              <div class="sale-detail">${escapeHtml(v.phone)} · ${escapeHtml(v.source)} · Closer: ${closerOf(v)}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        dnSec.style.display = 'none';
+      }
+
+      const modal = document.querySelector('#summary-modal .modal');
+      modal.setAttribute('data-state', state || 'confirm');
+      document.getElementById('summary-modal').classList.add('show');
+    }
+
+    function closeAndReset() {
+      document.getElementById('summary-modal').classList.remove('show');
+      const existing = loadTodaysReport();
+      pendingPayload = null;
+      if (existing) {
+        showAlreadySent(existing);
+      } else {
+        showStartScreen();
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    initDate();
+    changeCount(0);
+
+    // Auth check on load
+    const savedUser = localStorage.getItem('ar_user');
+    if (savedUser && USERS.find(u => u.name === savedUser)) {
+      currentUser = savedUser;
+      enterApp();
+    } else {
+      document.getElementById('login-password').focus();
+    }
+
+    // Submit password on Enter
+    document.getElementById('login-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') tryLogin();
+    });
+  </script>
+</body>
+</html>
