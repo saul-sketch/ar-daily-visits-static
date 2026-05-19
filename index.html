@@ -709,6 +709,137 @@
 
     .edit-banner strong { color: #78350f; }
 
+    /* Location Selection Screen */
+    .location-screen {
+      background: white;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 60px 32px 50px;
+      text-align: center;
+    }
+
+    .location-screen h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .location-screen .location-sub {
+      color: var(--gray-500);
+      font-size: 14px;
+      margin: 0 auto 36px;
+      max-width: 460px;
+      line-height: 1.5;
+    }
+
+    .location-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .location-card {
+      background: var(--gray-100);
+      border: 2px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 32px 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .location-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      background: white;
+    }
+
+    .location-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: white;
+    }
+
+    .location-icon.orlando { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+    .location-icon.kissimmee { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+    .location-card-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .location-card-sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      letter-spacing: 0.3px;
+    }
+
+    /* Location pill in header */
+    .location-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .location-pill:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .location-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .location-pill .dot.orlando { background: #3b82f6; }
+    .location-pill .dot.kissimmee { background: #f59e0b; }
+
+    /* Location banner in modal */
+    .location-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--gray-100);
+      padding: 10px 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .location-banner .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .location-banner .dot.orlando { background: #3b82f6; }
+    .location-banner .dot.kissimmee { background: #f59e0b; }
+
     /* Start Screen */
     .start-screen {
       background: white;
@@ -1087,11 +1218,23 @@
         <div class="subtitle">Reporte Diario de Visitas</div>
       </div>
       <div class="header-right">
+        <div class="location-pill" id="location-pill" onclick="changeLocation()" title="Cambiar locación" style="display:none;">
+          <span class="dot" id="location-dot"></span>
+          <span id="location-name">—</span>
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+          </svg>
+        </div>
         <div class="user-pill">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
           </svg>
           <span id="user-name">—</span>
+          <button class="logout-btn" onclick="changePassword()" title="Cambiar contraseña" style="margin-left:2px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+          </button>
           <button class="logout-btn" onclick="logout()" title="Cerrar sesión">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -1101,6 +1244,34 @@
         <div class="date-badge">
           <div class="day" id="date-day"></div>
           <div class="month-year" id="date-month"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Selector Screen -->
+    <div class="location-screen" id="location-screen" style="display:none;">
+      <h2>¿Para qué locación es este reporte?</h2>
+      <p class="location-sub">Selecciona la locación. Esta selección queda visible durante toda la sesión y aparece en la confirmación del reporte para evitar errores.</p>
+      <div class="location-cards">
+        <div class="location-card" onclick="selectLocation('Orlando')">
+          <div class="location-icon orlando">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div class="location-card-name">Orlando</div>
+          <div class="location-card-sub">Auto Republic Orlando</div>
+        </div>
+        <div class="location-card" onclick="selectLocation('Kissimmee')">
+          <div class="location-icon kissimmee">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div class="location-card-name">Kissimmee</div>
+          <div class="location-card-sub">Auto Republic Kissimmee</div>
         </div>
       </div>
     </div>
@@ -1209,6 +1380,18 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Manage Agents Modal -->
+  <div id="manage-agents-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center;" onclick="if(event.target.id==='manage-agents-overlay') closeManageAgentsModal()">
+    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:90vw; max-height:80vh; overflow:auto;">
+      <h3 id="manage-agents-title" style="margin:0 0 4px 0; font-size:17px;">Eliminar agentes</h3>
+      <p style="margin:0 0 16px 0; font-size:12px; color:#6b7280;">Click "× Eliminar" para sacar al agente del dropdown.</p>
+      <div id="manage-agents-body"></div>
+      <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+        <button class="filter-tab" onclick="closeManageAgentsModal()" style="border:1px solid #e5e7eb;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Summary Modal -->
   <div class="modal-overlay" id="summary-modal">
     <div class="modal" data-state="confirm">
@@ -1228,6 +1411,10 @@
         <div class="modal-subtitle" id="summary-date"></div>
       </div>
       <div class="modal-body">
+        <div class="location-banner" id="modal-location-banner">
+          <span class="dot" id="modal-location-dot"></span>
+          <span>Locación: <strong id="modal-location-name">—</strong></span>
+        </div>
         <div class="summary-grid">
           <div class="summary-stat">
             <div class="summary-stat-label">Visitas</div>
@@ -1257,6 +1444,20 @@
             <div class="summary-stat-label">Down payment colectado</div>
             <div class="summary-stat-value" id="sum-down-collected">$0</div>
           </div>
+          <div class="summary-stat full-width">
+            <div class="summary-stat-label">PD (pago diferido)</div>
+            <div class="summary-stat-value" id="sum-pd">$0</div>
+          </div>
+        </div>
+
+        <div class="sales-section" id="visit-types-section" style="display:none;">
+          <div class="section-title">Visitas por tipo</div>
+          <div id="visit-types-grid" style="display:grid; grid-template-columns: repeat(3,1fr); gap:8px;"></div>
+        </div>
+
+        <div class="sales-section" id="sale-types-section" style="display:none;">
+          <div class="section-title">Ventas por tipo</div>
+          <div id="sale-types-grid" style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px;"></div>
         </div>
 
         <div class="sales-section" id="sales-section" style="display:none;">
@@ -1286,55 +1487,206 @@
     const MAX_CARDS = 20;
     const PREDEFINED_LENDERS = ['CapitalOne','Carvant Financial LLC','Exeter Finance','Global Lending Services','Lendbuzz Funding LLC','Lobel Financial','OneMain Financial Group LLC','Strike Acceptance','Veros Credit LLC','Western Funding','Westlake Financial','Cash'];
 
-    // MOCK auth — replace with backend call when ready
-    const USERS = [
-      { password: 'carlos2026', name: 'Carlos' },
-      { password: 'maria2026', name: 'María' },
-      { password: 'admin2026', name: 'Admin' }
-    ];
+    // Auth via Supabase app_users table
 
     const rows = [];
     let visitCount = 4;
     let currentUser = null;
+    let currentUserAccess = 'all';
+    let currentLocation = null;
     let editMode = false;
 
+    // ===== Supabase backend =====
+    const SUPA_URL = 'https://xwxjutaqouaeocvxawlw.supabase.co';
+    const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3eGp1dGFxb3VhZW9jdnhhd2x3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTIxMzYsImV4cCI6MjA5MjYyODEzNn0.TOigRbaNL5z3Q7hd4llJyqrC6vZwn_-1R-5JudXtJmU';
+    const SUPA_HEADERS = { apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}`, 'Content-Type': 'application/json' };
+    let _todayCache = null;
+    let _agentsCache = { closers: { Orlando: [], Kissimmee: [] }, setters: [] };
+
+    async function refreshAgentsCache() {
+      try {
+        const res = await fetch(`${SUPA_URL}/rest/v1/ar_agents?select=*&order=name.asc`, { headers: SUPA_HEADERS });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        _agentsCache = { closers: { Orlando: [], Kissimmee: [] }, setters: [] };
+        data.forEach(a => {
+          if (a.role === 'closer' && (a.location === 'Orlando' || a.location === 'Kissimmee')) {
+            _agentsCache.closers[a.location].push(a);
+          } else if (a.role === 'setter') {
+            _agentsCache.setters.push(a);
+          }
+        });
+      } catch (e) {
+        console.error('refreshAgentsCache failed', e);
+      }
+    }
+
+    function listClosers() {
+      return (currentLocation && _agentsCache.closers[currentLocation]) || [];
+    }
+    function listSetters() {
+      return _agentsCache.setters || [];
+    }
+
+    async function addAgent(role, name) {
+      const cleaned = String(name || '').trim();
+      if (!cleaned) return null;
+      const body = { name: cleaned, role, created_by: currentUser };
+      if (role === 'closer') body.location = currentLocation;
+      const res = await fetch(`${SUPA_URL}/rest/v1/ar_agents`, {
+        method: 'POST',
+        headers: { ...SUPA_HEADERS, Prefer: 'return=representation' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        if (txt.includes('duplicate') || res.status === 409) {
+          alert(`"${cleaned}" ya existe en la lista`);
+          await refreshAgentsCache();
+          return cleaned;
+        }
+        alert('Error agregando: ' + txt);
+        return null;
+      }
+      await refreshAgentsCache();
+      return cleaned;
+    }
+
+    async function deleteAgentById(id) {
+      const res = await fetch(`${SUPA_URL}/rest/v1/ar_agents?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: SUPA_HEADERS
+      });
+      if (!res.ok) { alert('Error eliminando'); return false; }
+      await refreshAgentsCache();
+      return true;
+    }
+
     function todayKey() {
-      return new Date().toISOString().split('T')[0];
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function reportStorageKey(date, user) {
-      return `ar_report_${date}_${user}`;
+    async function refreshTodayCache() {
+      if (!currentLocation) { _todayCache = null; return; }
+      try {
+        const res = await fetch(`${SUPA_URL}/rest/v1/ar_daily_reports?date=eq.${todayKey()}&location=eq.${currentLocation}`, { headers: SUPA_HEADERS });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        _todayCache = data[0] || null;
+      } catch (e) {
+        console.error('refreshTodayCache failed', e);
+        _todayCache = null;
+      }
     }
 
-    function saveReportToStorage(data) {
-      const key = reportStorageKey(data.date, currentUser);
-      const record = { ...data, submitted_at: new Date().toISOString(), submitted_by: currentUser };
-      localStorage.setItem(key, JSON.stringify(record));
-      return record;
+    async function saveReportToStorage(data) {
+      const record = { ...data, location: currentLocation, submitted_by: currentUser };
+      // Upsert via on_conflict on (date, location)
+      const res = await fetch(`${SUPA_URL}/rest/v1/ar_daily_reports?on_conflict=date,location`, {
+        method: 'POST',
+        headers: { ...SUPA_HEADERS, Prefer: 'resolution=merge-duplicates,return=representation' },
+        body: JSON.stringify({ ...record, last_edited_at: editMode ? new Date().toISOString() : null, last_edited_by: editMode ? currentUser : null })
+      });
+      if (!res.ok) throw new Error(`Save failed: ${res.status} ${await res.text()}`);
+      const saved = (await res.json())[0];
+      _todayCache = saved;
+      return saved;
     }
 
     function loadTodaysReport() {
-      if (!currentUser) return null;
-      const raw = localStorage.getItem(reportStorageKey(todayKey(), currentUser));
-      return raw ? JSON.parse(raw) : null;
+      return _todayCache;
     }
 
-    function tryLogin() {
-      const password = document.getElementById('login-password').value;
-      const errorEl = document.getElementById('login-error');
-      const match = USERS.find(u => u.password === password);
-      if (!match) {
-        errorEl.style.display = 'block';
-        errorEl.classList.remove('shake');
-        void errorEl.offsetWidth;
-        errorEl.classList.add('shake');
+    function showLocationScreen() {
+      document.getElementById('location-screen').style.display = 'block';
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('main-form').style.display = 'none';
+      document.getElementById('already-sent-screen').style.display = 'none';
+      document.getElementById('edit-banner').style.display = 'none';
+    }
+
+    async function selectLocation(loc) {
+      currentLocation = loc;
+      localStorage.setItem('ar_location', loc);
+      updateLocationPill();
+      document.getElementById('location-screen').style.display = 'none';
+      await Promise.all([refreshTodayCache(), refreshAgentsCache()]);
+      const existing = loadTodaysReport();
+      if (existing) showAlreadySent(existing);
+      else showStartScreen();
+    }
+
+    function updateLocationPill() {
+      if (!currentLocation) {
+        document.getElementById('location-pill').style.display = 'none';
         return;
       }
-      currentUser = match.name;
-      localStorage.setItem('ar_user', currentUser);
-      errorEl.style.display = 'none';
-      document.getElementById('login-password').value = '';
-      enterApp();
+      document.getElementById('location-pill').style.display = 'inline-flex';
+      document.getElementById('location-name').textContent = currentLocation;
+      const dot = document.getElementById('location-dot');
+      dot.className = 'dot ' + currentLocation.toLowerCase();
+    }
+
+    function changeLocation() {
+      if (!confirm('¿Cambiar de locación? Si tenías un reporte en proceso, se perderá lo no guardado.')) return;
+      localStorage.removeItem('ar_location');
+      currentLocation = null;
+      editMode = false;
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      updateLocationPill();
+      showLocationScreen();
+    }
+
+    async function tryLogin() {
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      const btn = document.querySelector('.btn-login');
+      if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+      try {
+        const res = await fetch(`${SUPA_URL}/rest/v1/app_users?password=eq.${encodeURIComponent(password)}&select=name,location_access`, { headers: SUPA_HEADERS });
+        const data = await res.json();
+        if (!data || data.length === 0) {
+          errorEl.textContent = 'Contraseña incorrecta';
+          errorEl.style.display = 'block';
+          errorEl.classList.remove('shake');
+          void errorEl.offsetWidth;
+          errorEl.classList.add('shake');
+          return;
+        }
+        currentUser = data[0].name;
+        currentUserAccess = data[0].location_access || 'all';
+        localStorage.setItem('ar_user', currentUser);
+        localStorage.setItem('ar_user_access', currentUserAccess);
+        errorEl.style.display = 'none';
+        document.getElementById('login-password').value = '';
+        await enterApp();
+      } catch (e) {
+        errorEl.textContent = 'Error de conexión';
+        errorEl.style.display = 'block';
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
+      }
+    }
+
+    async function changePassword() {
+      const current = prompt('Contraseña actual:');
+      if (!current) return;
+      const r1 = await fetch(`${SUPA_URL}/rest/v1/app_users?name=eq.${encodeURIComponent(currentUser)}&password=eq.${encodeURIComponent(current)}&select=name`, { headers: SUPA_HEADERS });
+      const d1 = await r1.json();
+      if (!d1 || d1.length === 0) { alert('Contraseña actual incorrecta'); return; }
+      const newPwd = prompt('Nueva contraseña (mínimo 4 caracteres):');
+      if (!newPwd || newPwd.length < 4) { alert('Debe tener mínimo 4 caracteres'); return; }
+      const confirm2 = prompt('Confirma nueva contraseña:');
+      if (newPwd !== confirm2) { alert('Las contraseñas no coinciden'); return; }
+      const r2 = await fetch(`${SUPA_URL}/rest/v1/app_users?name=eq.${encodeURIComponent(currentUser)}`, {
+        method: 'PATCH',
+        headers: { ...SUPA_HEADERS, Prefer: 'return=minimal' },
+        body: JSON.stringify({ password: newPwd, updated_at: new Date().toISOString() })
+      });
+      if (r2.ok) alert('Contraseña actualizada');
+      else alert('Error: ' + await r2.text());
     }
 
     function logout() {
@@ -1345,22 +1697,32 @@
       document.getElementById('main-container').style.display = 'none';
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('login-password').focus();
+      updateLocationPill();
     }
 
-    function enterApp() {
+    async function enterApp() {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-container').style.display = 'block';
       document.getElementById('user-name').textContent = currentUser;
-      const existing = loadTodaysReport();
-      if (existing) {
-        showAlreadySent(existing);
+
+      // Form: cualquier usuario puede llenar el reporte de cualquier locación.
+      // (El control por location_access solo aplica al dashboard.)
+      const savedLocation = localStorage.getItem('ar_location');
+      if (savedLocation === 'Orlando' || savedLocation === 'Kissimmee') {
+        currentLocation = savedLocation;
+        updateLocationPill();
+        await refreshTodayCache();
+        const existing = loadTodaysReport();
+        if (existing) showAlreadySent(existing);
+        else showStartScreen();
       } else {
-        showStartScreen();
+        showLocationScreen();
       }
     }
 
     function showAlreadySent(report) {
       editMode = false;
+      document.getElementById('location-screen').style.display = 'none';
       document.getElementById('already-sent-screen').style.display = 'block';
       document.getElementById('start-screen').style.display = 'none';
       document.getElementById('main-form').style.display = 'none';
@@ -1404,7 +1766,13 @@
       document.getElementById('rows-container').innerHTML = '';
       saved.visits.forEach((v, i) => {
         createCard(i);
+        // Back-compat: derive scheduledBy from legacy subgen if missing
+        const inferredScheduledBy = v.scheduled_by
+          || (v.subgen === true ? 'Self-gen' : '');
         Object.assign(rows[i], {
+          scheduledBy: inferredScheduledBy,
+          noContact: !!v.no_contact,
+          _walkInDecided: inferredScheduledBy === 'Walk-in',
           phone: v.phone || '',
           name: v.name || '',
           source: v.source || '',
@@ -1414,12 +1782,14 @@
           applied: v.applied,
           result: v.result,
           sale: v.sale,
+          subgen: v.subgen != null ? v.subgen : null,
           dealNumber: v.deal_number || '',
           netProfit: v.net_profit != null ? String(v.net_profit) : '',
           lender: v.lender || '',
           vehicle: v.vehicle || '',
           downCollected: v.down_collected != null ? String(v.down_collected) : '',
-          downDeferred: v.down_deferred != null ? String(v.down_deferred) : ''
+          downDeferred: v.down_deferred != null ? String(v.down_deferred) : '',
+          downMethod: v.down_method || ''
         });
         syncCardUI(i);
       });
@@ -1463,6 +1833,7 @@
 
     function showStartScreen() {
       editMode = false;
+      document.getElementById('location-screen').style.display = 'none';
       document.getElementById('already-sent-screen').style.display = 'none';
       document.getElementById('edit-banner').style.display = 'none';
       document.getElementById('start-screen').style.display = 'block';
@@ -1474,9 +1845,10 @@
 
     function createCard(index) {
       rows.push({
+        scheduledBy: '', noContact: false,
         phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
         applied: null, result: null, sale: null,
-        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', dealNumber: ''
+        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null
       });
 
       const card = document.createElement('div');
@@ -1489,26 +1861,51 @@
           <button class="clear-btn" onclick="removeCard(${index})" title="Eliminar visita">&times;</button>
         </div>
 
-        <!-- Step 1: Phone + Name (always visible) -->
-        <div class="field-note">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4M12 8h.01"/>
-          </svg>
-          <span>Si la visita vino de <strong>Marketing</strong> o <strong>Facebook Marketplace</strong>, debe existir un appointment en el CRM — usa el <strong>teléfono y nombre del lead</strong> y debe hacer match con la cita del calendario (aunque el comprador final haya sido otro, ej. cosigner). Si fue <strong>walk-in (Source: Others)</strong>, no hay appointment al cual hacer match — usa los datos del cliente.</span>
-        </div>
-        <div class="field-grid grid-2">
-          <div class="field">
-            <label class="field-label"># de teléfono<span class="req">*</span></label>
-            <input type="tel" class="field-input" data-field="phone" placeholder="000-000-0000" maxlength="12"
-              oninput="updatePhone(${index}, this)"
-              onfocus="activateRow(${index})">
+        <!-- Step 0: Quién agendó (Self-gen / Call Center / Walk-in) -->
+        <div class="field" style="margin-bottom:14px;">
+          <label class="field-label">¿Quién agendó la visita?<span class="req">*</span></label>
+          <div class="toggle-group" data-toggle="scheduledBy" style="flex-wrap:wrap;">
+            <button type="button" class="toggle-btn" onclick="setScheduledBy(${index}, 'Self-gen')">Self-gen</button>
+            <button type="button" class="toggle-btn" onclick="setScheduledBy(${index}, 'Call Center')">Call Center</button>
+            <button type="button" class="toggle-btn" onclick="setScheduledBy(${index}, 'Walk-in')">Walk-in</button>
           </div>
-          <div class="field">
-            <label class="field-label">Nombre<span class="req">*</span></label>
-            <input type="text" class="field-input" data-field="name" placeholder="Nombre completo"
-              oninput="updateRow(${index}, 'name', this.value)"
-              onfocus="activateRow(${index})">
+        </div>
+
+        <!-- Step 0b: Walk-in sub-toggle "¿Tenemos datos del prospecto?" -->
+        <div class="step" id="step-walkin-info-${index}">
+          <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+            <div class="field">
+              <label class="field-label">¿Tenemos datos del prospecto?<span class="req">*</span><span class="opt">algunos walk-ins se van sin dar info</span></label>
+              <div class="toggle-group" data-toggle="hasContact">
+                <button type="button" class="toggle-btn" onclick="setNoContact(${index}, false)">Sí, tengo</button>
+                <button type="button" class="toggle-btn" onclick="setNoContact(${index}, true)">No tengo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Phone + Name (hidden when Walk-in + no contact) -->
+        <div class="step" id="step-contact-${index}">
+          <div class="field-note">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4M12 8h.01"/>
+            </svg>
+            <span>Si la visita es <strong>Self-gen</strong> o <strong>Call Center</strong>, debe existir un appointment en el CRM — usa el <strong>teléfono y nombre del lead</strong>.</span>
+          </div>
+          <div class="field-grid grid-2">
+            <div class="field">
+              <label class="field-label"># de teléfono<span class="req">*</span></label>
+              <input type="tel" class="field-input" data-field="phone" placeholder="000-000-0000" maxlength="12"
+                oninput="updatePhone(${index}, this)"
+                onfocus="activateRow(${index})">
+            </div>
+            <div class="field">
+              <label class="field-label">Nombre<span class="req">*</span></label>
+              <input type="text" class="field-input" data-field="name" placeholder="Nombre completo"
+                oninput="updateRow(${index}, 'name', this.value)"
+                onfocus="activateRow(${index})">
+            </div>
           </div>
         </div>
 
@@ -1526,20 +1923,23 @@
             </div>
             <div class="field">
               <label class="field-label">Setter<span class="req">*</span><span class="opt">(N/A si no aplica)</span></label>
-              <input type="text" class="field-input" data-field="setter" placeholder="Nombre del setter o N/A"
-                oninput="updateRow(${index}, 'setter', this.value)">
+              <select class="field-select agent-select" data-field="setter" data-role="setter"
+                onchange="onAgentSelectChange(${index}, 'setter', this)">
+              </select>
             </div>
           </div>
           <div class="field-grid grid-2">
             <div class="field">
               <label class="field-label">Closer<span class="req">*</span></label>
-              <input type="text" class="field-input" data-field="closer" placeholder="Nombre del closer"
-                oninput="updateRow(${index}, 'closer', this.value)">
+              <select class="field-select agent-select" data-field="closer" data-role="closer"
+                onchange="onAgentSelectChange(${index}, 'closer', this)">
+              </select>
             </div>
             <div class="field">
               <label class="field-label">Closer #2<span class="req">*</span><span class="opt">(N/A si no aplica)</span></label>
-              <input type="text" class="field-input" data-field="closer2" placeholder="Nombre del closer #2 o N/A"
-                oninput="updateRow(${index}, 'closer2', this.value)">
+              <select class="field-select agent-select" data-field="closer2" data-role="closer"
+                onchange="onAgentSelectChange(${index}, 'closer2', this)">
+              </select>
             </div>
           </div>
         </div>
@@ -1638,17 +2038,36 @@
               </div>
             </div>
             <div class="field">
-              <label class="field-label">Down payment diferido<span class="req">*</span></label>
+              <label class="field-label">PD<span class="req">*</span><span class="opt">(pago diferido)</span></label>
               <div class="money-wrapper">
                 <input type="text" inputmode="numeric" class="field-input money" data-field="downDeferred" placeholder="0.00"
                   oninput="updateMoney(${index}, 'downDeferred', this)">
               </div>
             </div>
           </div>
+          <!-- Step 6b: Down Method (shown only when Down Collected > 0) -->
+          <div class="step" id="step-downmethod-${index}" style="margin-top:12px;">
+            <div class="field">
+              <label class="field-label">Método del Down payment<span class="req">*</span></label>
+              <select class="field-select" data-field="downMethod" onchange="updateRow(${index}, 'downMethod', this.value)">
+                <option value="">Seleccionar...</option>
+                <option value="Cash">Cash</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Zelle">Zelle</option>
+                <option value="Tradein">Tradein</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
         </div>
       `;
 
       document.getElementById('rows-container').appendChild(card);
+      // Populate agent dropdowns for this new card
+      const r = rows[index];
+      card.querySelectorAll('.agent-select').forEach(sel => {
+        populateAgentSelect(sel, sel.dataset.role, r[sel.dataset.field] || '');
+      });
       checkProgress(index);
     }
 
@@ -1669,9 +2088,23 @@
     function checkProgress(i) {
       const r = rows[i];
 
-      // Step 2: phone (10 digits) AND name filled → show attribution
+      // Step 0b: Walk-in chosen → show "¿Tenemos datos?" toggle
+      const isWalkIn = r.scheduledBy === 'Walk-in';
+      setStep(`step-walkin-info-${i}`, isWalkIn);
+
+      // Determine if contact (phone + name) is needed:
+      // - Self-gen / Call Center: always need contact
+      // - Walk-in: only if has contact (noContact === false explicitly)
+      const scheduledChosen = !!r.scheduledBy;
+      const skipContact = isWalkIn && r.noContact === true;
+      const walkInContactDecided = isWalkIn && (r.noContact === true || r.noContact === false) && r._walkInDecided === true;
+      const showContact = scheduledChosen && !skipContact && (!isWalkIn || walkInContactDecided);
+      setStep(`step-contact-${i}`, showContact);
+
+      // Step 2 (attribution): only after either contact filled OR skipped (Walk-in no-contact)
       const phoneDigits = r.phone.replace(/\D/g, '');
-      const showAttr = phoneDigits.length === 10 && r.name.trim();
+      const contactReady = skipContact || (phoneDigits.length === 10 && r.name.trim());
+      const showAttr = scheduledChosen && contactReady && (!isWalkIn || walkInContactDecided);
       setStep(`step-attr-${i}`, showAttr);
 
       // Step 3: closer filled → show aplicó
@@ -1691,10 +2124,156 @@
       setStep(`step-deal-${i}`, showFni);
       setStep(`step-fni-${i}`, showFni);
 
+      // Step 6b: Down Method only when Down Collected > 0
+      const downAmt = parseFloat(r.downCollected);
+      setStep(`step-downmethod-${i}`, showFni && downAmt > 0);
+
       // Visual state on card
       const card = getCard(i);
       if (showFni) card.classList.add('has-sale');
       else card.classList.remove('has-sale');
+    }
+
+    // ============== AGENT DROPDOWNS (closer / setter) ==============
+
+    function populateAgentSelect(selectEl, role, currentValue) {
+      const list = role === 'closer' ? listClosers() : listSetters();
+      const optionsHtml = [
+        '<option value="">Seleccionar...</option>',
+        '<option value="N/A">N/A</option>',
+        ...list.map(a => `<option value="${escapeAttr(a.name)}">${escapeHtml(a.name)}</option>`),
+        '<option value="__add__" style="font-weight:600; color:#10b981;">+ Agregar nuevo...</option>'
+      ];
+      if (list.length > 0) {
+        optionsHtml.push('<option value="__manage__" style="font-weight:600; color:#ef4444;">⚙ Eliminar agente...</option>');
+      }
+      selectEl.innerHTML = optionsHtml.join('');
+      // If currentValue exists and isn't in the list, add it as a sticky option so existing selection isn't lost
+      if (currentValue && currentValue !== 'N/A' && !list.find(a => a.name === currentValue)) {
+        const opt = document.createElement('option');
+        opt.value = currentValue;
+        opt.textContent = currentValue + ' (no en lista)';
+        selectEl.insertBefore(opt, selectEl.querySelector('option[value="__add__"]'));
+      }
+      selectEl.value = currentValue || '';
+    }
+
+    function rebuildAllAgentSelects() {
+      document.querySelectorAll('.agent-select').forEach(sel => {
+        const role = sel.dataset.role;
+        const card = sel.closest('.visit-card');
+        const idx = card ? parseInt(card.dataset.index) : -1;
+        const field = sel.dataset.field;
+        const cur = (idx >= 0 && rows[idx]) ? (rows[idx][field] || '') : '';
+        populateAgentSelect(sel, role, cur);
+      });
+    }
+
+    async function onAgentSelectChange(index, field, selectEl) {
+      const v = selectEl.value;
+      if (v === '__add__') {
+        const role = selectEl.dataset.role;
+        const promptMsg = role === 'closer'
+          ? `Nuevo ${field === 'closer2' ? 'Closer #2' : 'Closer'} para ${currentLocation}:`
+          : 'Nuevo Setter (compartido entre ambas locaciones):';
+        const name = prompt(promptMsg);
+        if (!name || !name.trim()) {
+          selectEl.value = rows[index][field] || '';
+          return;
+        }
+        const added = await addAgent(role, name.trim());
+        rebuildAllAgentSelects();
+        if (added) {
+          rows[index][field] = added;
+          selectEl.value = added;
+          activateRow(index);
+          clearFieldInvalid(index, field);
+          checkProgress(index);
+          updateStats();
+        }
+        return;
+      }
+      if (v === '__manage__') {
+        openManageAgentsModal(selectEl.dataset.role);
+        selectEl.value = rows[index][field] || '';
+        return;
+      }
+      // Normal selection
+      updateRow(index, field, v);
+    }
+
+    let _lastManageRole = null;
+
+    function openManageAgentsModal(role) {
+      _lastManageRole = role;
+      const list = role === 'closer' ? listClosers() : listSetters();
+      const scope = role === 'closer' ? `closers de ${currentLocation}` : 'setters (ambas locaciones)';
+      const ov = document.getElementById('manage-agents-overlay');
+      const body = document.getElementById('manage-agents-body');
+      const title = document.getElementById('manage-agents-title');
+      title.textContent = `Eliminar ${scope}`;
+      if (list.length === 0) {
+        body.innerHTML = '<p style="color:#6b7280; font-size:13px; padding:20px 0;">No hay agentes en esta lista.</p>';
+      } else {
+        body.innerHTML = list.map(a => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
+            <span style="font-weight:500;">${escapeHtml(a.name)}</span>
+            <button class="filter-tab" style="border:1px solid #ef4444; color:#ef4444; padding:4px 12px; font-size:12px;"
+              onclick="confirmDeleteAgent('${a.id}', '${escapeAttr(a.name)}')">× Eliminar</button>
+          </div>
+        `).join('');
+      }
+      ov.style.display = 'flex';
+    }
+
+    function closeManageAgentsModal() {
+      document.getElementById('manage-agents-overlay').style.display = 'none';
+    }
+
+    async function confirmDeleteAgent(id, name) {
+      if (!confirm(`¿Eliminar "${name}" del dropdown?\n\nLos reportes históricos donde aparece su nombre NO se modifican — solo deja de aparecer en futuras selecciones.`)) return;
+      const ok = await deleteAgentById(id);
+      if (ok) {
+        rebuildAllAgentSelects();
+        openManageAgentsModal(_lastManageRole || 'closer');
+      }
+    }
+
+    function setScheduledBy(index, value) {
+      const r = rows[index];
+      // Toggle off if same value clicked
+      r.scheduledBy = (r.scheduledBy === value) ? '' : value;
+      // Reset Walk-in sub-state when leaving Walk-in
+      if (r.scheduledBy !== 'Walk-in') {
+        r.noContact = false;
+        r._walkInDecided = false;
+      }
+      activateRow(index);
+      clearToggleInvalid(index, 'scheduledBy');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
+    }
+
+    function setNoContact(index, value) {
+      const r = rows[index];
+      r.noContact = value;
+      r._walkInDecided = true; // user explicitly chose
+      // If no contact, clear phone/name fields visually + state
+      if (value === true) {
+        r.phone = '';
+        r.name = '';
+        const card = getCard(index);
+        const ph = card.querySelector('[data-field="phone"]');
+        const nm = card.querySelector('[data-field="name"]');
+        if (ph) ph.value = '';
+        if (nm) nm.value = '';
+      }
+      activateRow(index);
+      clearToggleInvalid(index, 'hasContact');
+      renderToggles(index);
+      checkProgress(index);
+      updateStats();
     }
 
     function clearFieldInvalid(index, field) {
@@ -1800,6 +2379,24 @@
       const card = getCard(index);
       const r = rows[index];
 
+      // scheduledBy (Self-gen / Call Center / Walk-in)
+      const sb = card.querySelector('[data-toggle="scheduledBy"]');
+      if (sb) {
+        const sbb = sb.querySelectorAll('.toggle-btn');
+        sbb[0].className = 'toggle-btn' + (r.scheduledBy === 'Self-gen'   ? ' active-yes' : '');
+        sbb[1].className = 'toggle-btn' + (r.scheduledBy === 'Call Center' ? ' active-yes' : '');
+        sbb[2].className = 'toggle-btn' + (r.scheduledBy === 'Walk-in'    ? ' active-yes' : '');
+      }
+
+      // hasContact (Sí, tengo / No tengo) — only when Walk-in
+      const hc = card.querySelector('[data-toggle="hasContact"]');
+      if (hc) {
+        const hcb = hc.querySelectorAll('.toggle-btn');
+        const decided = r._walkInDecided === true;
+        hcb[0].className = 'toggle-btn' + (decided && r.noContact === false ? ' active-yes' : '');
+        hcb[1].className = 'toggle-btn' + (decided && r.noContact === true  ? ' active-no' : '');
+      }
+
       const a = card.querySelector('[data-toggle="applied"]').querySelectorAll('.toggle-btn');
       a[0].className = 'toggle-btn' + (r.applied === true ? ' active-yes' : '');
       a[1].className = 'toggle-btn' + (r.applied === false ? ' active-no' : '');
@@ -1815,9 +2412,10 @@
 
     function clearRow(index) {
       rows[index] = {
+        scheduledBy: '', noContact: false,
         phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
         applied: null, result: null, sale: null,
-        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', dealNumber: ''
+        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null
       };
       clearInvalid(index);
       const card = getCard(index);
@@ -1848,7 +2446,7 @@
     }
 
     function isFilled(r) {
-      return r.phone.trim() || r.name.trim() || r.applied !== null || r.result !== null || r.sale !== null;
+      return !!r.scheduledBy || r.phone.trim() || r.name.trim() || r.applied !== null || r.result !== null || r.sale !== null;
     }
 
     function isComplete(r) {
@@ -1914,9 +2512,14 @@
       const card = getCard(index);
       const r = rows[index];
 
-      ['phone','name','source','setter','closer','closer2','vehicle','dealNumber','netProfit','downCollected','downDeferred'].forEach(f => {
+      ['phone','name','source','vehicle','dealNumber','netProfit','downCollected','downDeferred','downMethod'].forEach(f => {
         const el = card.querySelector(`[data-field="${f}"]`);
         if (el && r[f] !== undefined && r[f] !== null) el.value = r[f];
+      });
+      // Agent selects (closer, closer2, setter) need populate to handle sticky values
+      ['setter','closer','closer2'].forEach(f => {
+        const sel = card.querySelector(`[data-field="${f}"]`);
+        if (sel) populateAgentSelect(sel, sel.dataset.role, r[f] || '');
       });
 
       // Lender: select + optional other input
@@ -1947,9 +2550,20 @@
 
     function validateRow(r) {
       const errs = [];
-      const phoneDigits = r.phone.replace(/\D/g, '');
-      if (phoneDigits.length !== 10) errs.push('phone');
-      if (!r.name.trim()) errs.push('name');
+      if (!r.scheduledBy) errs.push('scheduledBy');
+
+      const isWalkIn = r.scheduledBy === 'Walk-in';
+      // For Walk-in, user must explicitly choose "tengo / no tengo"
+      if (isWalkIn && r._walkInDecided !== true) errs.push('hasContact');
+
+      // Contact (phone + name): required UNLESS Walk-in + no-contact
+      const skipContact = isWalkIn && r.noContact === true;
+      if (!skipContact) {
+        const phoneDigits = r.phone.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) errs.push('phone');
+        if (!r.name.trim()) errs.push('name');
+      }
+
       if (!r.source) errs.push('source');
       if (!r.setter.trim()) errs.push('setter');
       if (!r.closer.trim()) errs.push('closer');
@@ -1968,6 +2582,9 @@
             if (!r.vehicle.trim()) errs.push('vehicle');
             if (r.downCollected === '' || r.downCollected === null || r.downCollected === undefined) errs.push('downCollected');
             if (r.downDeferred === '' || r.downDeferred === null || r.downDeferred === undefined) errs.push('downDeferred');
+            // Down method required only if down collected > 0
+            const downAmt = parseFloat(r.downCollected) || 0;
+            if (downAmt > 0 && !r.downMethod) errs.push('downMethod');
           }
         }
       }
@@ -1984,7 +2601,7 @@
       const card = getCard(index);
       clearInvalid(index);
       errs.forEach(key => {
-        if (key === 'applied' || key === 'result' || key === 'sale') {
+        if (key === 'applied' || key === 'result' || key === 'sale' || key === 'scheduledBy' || key === 'hasContact') {
           const tg = card.querySelector(`[data-toggle="${key}"]`);
           if (tg) tg.classList.add('invalid');
         } else {
@@ -2029,9 +2646,11 @@
       const filled = rows;
 
       const data = {
-        date: new Date().toISOString().split('T')[0],
-        location: 'Auto Republic',
+        date: todayKey(),
+        location: currentLocation,
         visits: filled.map(r => ({
+          scheduled_by: r.scheduledBy || null,
+          no_contact: !!r.noContact,
           phone: r.phone,
           name: r.name,
           source: r.source,
@@ -2041,12 +2660,14 @@
           applied: r.applied,
           result: r.result,
           sale: r.sale,
+          subgen: r.sale === true ? (r.scheduledBy === 'Self-gen') : null,  // derived from scheduled_by
           deal_number: r.dealNumber,
           net_profit: parseFloat(r.netProfit) || null,
           lender: r.lender,
           vehicle: r.vehicle,
           down_collected: r.downCollected !== '' ? parseFloat(r.downCollected) : null,
-          down_deferred: r.downDeferred !== '' ? parseFloat(r.downDeferred) : null
+          down_deferred: r.downDeferred !== '' ? parseFloat(r.downDeferred) : null,
+          down_method: r.downMethod || null
         }))
       };
 
@@ -2056,18 +2677,24 @@
 
     let pendingPayload = null;
 
-    function confirmAndSend() {
+    async function confirmAndSend() {
       if (!pendingPayload) return;
-      // TODO: replace localStorage save with real API POST when backend is ready
-      const saved = saveReportToStorage(pendingPayload);
-      console.log('Payload para API:', JSON.stringify(saved, null, 2));
-      pendingPayload = saved;
-      const modal = document.querySelector('#summary-modal .modal');
-      modal.setAttribute('data-state', 'sent');
-      const icon = modal.querySelector('.icon-sent');
-      icon.style.animation = 'none';
-      void icon.offsetWidth;
-      icon.style.animation = '';
+      const btnConfirm = document.querySelector('.footer-confirm.btn-submit');
+      if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Enviando...'; }
+      try {
+        const saved = await saveReportToStorage(pendingPayload);
+        pendingPayload = saved;
+        const modal = document.querySelector('#summary-modal .modal');
+        modal.setAttribute('data-state', 'sent');
+        const icon = modal.querySelector('.icon-sent');
+        icon.style.animation = 'none';
+        void icon.offsetWidth;
+        icon.style.animation = '';
+      } catch (e) {
+        showToast('Error al enviar: ' + e.message);
+      } finally {
+        if (btnConfirm) { btnConfirm.disabled = false; btnConfirm.textContent = 'Confirmar y enviar'; }
+      }
     }
 
     function closeModal() {
@@ -2106,8 +2733,13 @@
       const sales = visits.filter(v => v.sale === true);
       const netProfit = sales.reduce((s, v) => s + (v.net_profit || 0), 0);
       const downCollected = sales.reduce((s, v) => s + (v.down_collected || 0), 0);
+      const pdTotal = sales.reduce((s, v) => s + (v.down_deferred || 0), 0);
 
       document.getElementById('summary-date').textContent = formatDateLong(data.date);
+      const loc = data.location || currentLocation || '—';
+      document.getElementById('modal-location-name').textContent = loc;
+      const mDot = document.getElementById('modal-location-dot');
+      mDot.className = 'dot ' + loc.toLowerCase();
       document.getElementById('sum-visits').textContent = visits.length;
       document.getElementById('sum-applied').textContent = applied.length;
       document.getElementById('sum-approved').textContent = approved.length;
@@ -2115,11 +2747,66 @@
       document.getElementById('sum-sales').textContent = sales.length;
       document.getElementById('sum-net-profit').textContent = fmtMoney(netProfit);
       document.getElementById('sum-down-collected').textContent = fmtMoney(downCollected);
+      document.getElementById('sum-pd').textContent = fmtMoney(pdTotal);
 
       const closerOf = v => isNA(v.closer2)
         ? escapeHtml(v.closer)
         : `${escapeHtml(v.closer)} & ${escapeHtml(v.closer2)}`;
       const setterOf = v => isNA(v.setter) ? '—' : escapeHtml(v.setter);
+
+      // Sale type categorization — prefer new scheduled_by, fallback to legacy
+      const saleType = v => {
+        if (v.scheduled_by === 'Self-gen' || v.subgen === true) return 'Self-gen';
+        if (v.scheduled_by === 'Call Center') return 'Setter';
+        if (v.scheduled_by === 'Walk-in') return 'Others';
+        // Legacy fallback (visits sin scheduled_by)
+        const hasSetter = v.setter && v.setter.trim() && !isNA(v.setter);
+        const fromCC = v.source === 'Marketing' || v.source === 'Facebook Marketplace';
+        if (hasSetter || fromCC) return 'Setter';
+        return 'Others';
+      };
+      const typeCount = sales.reduce((acc, s) => {
+        const t = saleType(s);
+        acc[t] = (acc[t] || 0) + 1;
+        return acc;
+      }, {});
+
+      const typeColors = { 'Self-gen':'#10b981', 'Setter':'#3b82f6', 'Others':'#6b7280' };
+      const typeSubs = { 'Self-gen':'closer agendó', 'Setter':'setter o call center', 'Others':'walk-in' };
+      const renderTypeCard = (t, count) => `
+        <div style="background: var(--gray-100); padding: 12px 14px; border-radius: 10px; border-left: 3px solid ${typeColors[t]};">
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color: var(--gray-500);">${t}</div>
+          <div style="font-size:22px; font-weight:700; color: ${typeColors[t]}; margin-top:2px;">${count || 0}</div>
+          <div style="font-size:10px; color: var(--gray-500); margin-top:1px;">${typeSubs[t]}</div>
+        </div>
+      `;
+
+      // Visitas por tipo (mismo bucketing, todas las visitas)
+      const visitTypeCount = visits.reduce((acc, v) => {
+        const t = saleType(v);
+        acc[t] = (acc[t] || 0) + 1;
+        return acc;
+      }, {});
+      const vtSec = document.getElementById('visit-types-section');
+      const vtGrid = document.getElementById('visit-types-grid');
+      if (visits.length > 0) {
+        vtSec.style.display = 'block';
+        vtGrid.style.gridTemplateColumns = 'repeat(3,1fr)';
+        vtGrid.innerHTML = ['Self-gen','Setter','Others'].map(t => renderTypeCard(t, visitTypeCount[t] || 0)).join('');
+      } else {
+        vtSec.style.display = 'none';
+      }
+
+      // Ventas por tipo
+      const typesSec = document.getElementById('sale-types-section');
+      const typesGrid = document.getElementById('sale-types-grid');
+      if (sales.length > 0) {
+        typesSec.style.display = 'block';
+        typesGrid.style.gridTemplateColumns = 'repeat(3,1fr)';
+        typesGrid.innerHTML = ['Self-gen','Setter','Others'].map(t => renderTypeCard(t, typeCount[t] || 0)).join('');
+      } else {
+        typesSec.style.display = 'none';
+      }
 
       const salesSec = document.getElementById('sales-section');
       const salesList = document.getElementById('sales-list');
@@ -2128,7 +2815,7 @@
         salesList.innerHTML = sales.map(s => `
           <div class="sale-item">
             <div class="sale-info">
-              <div class="sale-name">${escapeHtml(s.name)}</div>
+              <div class="sale-name">${escapeHtml(s.name || (s.no_contact ? '— sin info —' : ''))} ${(s.scheduled_by === 'Self-gen' || s.subgen === true) ? '<span style="font-size:9px; background:var(--green); color:white; padding:2px 6px; border-radius:100px; margin-left:6px; vertical-align: middle; font-weight:700;">SELF-GEN</span>' : ''}</div>
               <div class="sale-detail">${escapeHtml(s.vehicle)} · Deal #${escapeHtml(s.deal_number)} · ${escapeHtml(s.lender)}</div>
               <div class="sale-detail">${escapeHtml(s.source)} · Setter: ${setterOf(s)} · Closer: ${closerOf(s)}</div>
             </div>
@@ -2178,8 +2865,9 @@
       document.getElementById('summary-modal').classList.add('show');
     }
 
-    function closeAndReset() {
+    async function closeAndReset() {
       document.getElementById('summary-modal').classList.remove('show');
+      await refreshTodayCache();
       const existing = loadTodaysReport();
       pendingPayload = null;
       if (existing) {
@@ -2198,15 +2886,30 @@
 
     initDate();
     changeCount(0);
+    updateLocationPill();
 
-    // Auth check on load
-    const savedUser = localStorage.getItem('ar_user');
-    if (savedUser && USERS.find(u => u.name === savedUser)) {
-      currentUser = savedUser;
-      enterApp();
-    } else {
-      document.getElementById('login-password').focus();
-    }
+    // Auth check on load — verify user still exists in DB
+    (async () => {
+      const savedUser = localStorage.getItem('ar_user');
+      if (!savedUser) {
+        document.getElementById('login-password').focus();
+        return;
+      }
+      try {
+        const res = await fetch(`${SUPA_URL}/rest/v1/app_users?name=eq.${encodeURIComponent(savedUser)}&select=name,location_access`, { headers: SUPA_HEADERS });
+        const data = await res.json();
+        if (data && data.length > 0) {
+          currentUser = data[0].name;
+          currentUserAccess = data[0].location_access || 'all';
+          localStorage.setItem('ar_user_access', currentUserAccess);
+          await enterApp();
+        } else {
+          document.getElementById('login-password').focus();
+        }
+      } catch (e) {
+        document.getElementById('login-password').focus();
+      }
+    })();
 
     // Submit password on Enter
     document.getElementById('login-password').addEventListener('keydown', e => {
