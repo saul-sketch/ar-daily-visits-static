@@ -1380,14 +1380,42 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Add Agent Modal (replaces prompt() that doesn't work in GHL iframe) -->
+  <div id="add-agent-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='add-agent-overlay') closeAddAgentModal()">
+    <div style="background:white; padding:24px; border-radius:14px; width:380px; max-width:100%; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+      <h3 id="add-agent-title" style="margin:0 0 6px 0; font-size:17px; font-weight:700;">Agregar nuevo</h3>
+      <p id="add-agent-sub" style="margin:0 0 16px 0; font-size:13px; color:#6b7280;">Escribe el nombre completo (nombre y apellido).</p>
+      <input type="text" id="add-agent-input" placeholder="Ej: Pedro Pérez"
+        autocapitalize="words" autocomplete="off"
+        style="width:100%; padding:12px 14px; border:1.5px solid #cbd5e1; border-radius:10px; font-size:15px; font-family:inherit; box-sizing:border-box;"
+        onkeydown="if(event.key==='Enter') confirmAddAgent(); if(event.key==='Escape') closeAddAgentModal();">
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+        <button onclick="closeAddAgentModal()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cancelar</button>
+        <button onclick="confirmAddAgent()" style="padding:10px 16px; background:#0f172a; color:white; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal (replaces confirm()) -->
+  <div id="confirm-delete-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:65; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='confirm-delete-overlay') closeConfirmDelete()">
+    <div style="background:white; padding:24px; border-radius:14px; width:380px; max-width:100%; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+      <h3 style="margin:0 0 8px 0; font-size:17px; font-weight:700;">¿Eliminar agente?</h3>
+      <p id="confirm-delete-msg" style="margin:0 0 18px 0; font-size:13px; color:#6b7280; line-height:1.5;">—</p>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button onclick="closeConfirmDelete()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cancelar</button>
+        <button onclick="confirmDeleteAction()" style="padding:10px 16px; background:#ef4444; color:white; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Manage Agents Modal -->
-  <div id="manage-agents-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center;" onclick="if(event.target.id==='manage-agents-overlay') closeManageAgentsModal()">
-    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:90vw; max-height:80vh; overflow:auto;">
+  <div id="manage-agents-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='manage-agents-overlay') closeManageAgentsModal()">
+    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:100%; max-height:80vh; overflow:auto;">
       <h3 id="manage-agents-title" style="margin:0 0 4px 0; font-size:17px;">Eliminar agentes</h3>
       <p style="margin:0 0 16px 0; font-size:12px; color:#6b7280;">Click "× Eliminar" para sacar al agente del dropdown.</p>
       <div id="manage-agents-body"></div>
       <div style="display:flex; justify-content:flex-end; margin-top:16px;">
-        <button class="filter-tab" onclick="closeManageAgentsModal()" style="border:1px solid #e5e7eb;">Cerrar</button>
+        <button onclick="closeManageAgentsModal()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cerrar</button>
       </div>
     </div>
   </div>
@@ -2176,28 +2204,16 @@
       });
     }
 
+    // State for inline modals (work inside iframes where prompt()/confirm() are blocked)
+    let _addAgentContext = null;     // { index, field, selectEl, role }
+    let _confirmDeleteCtx = null;    // { id, name, role }
+
     async function onAgentSelectChange(index, field, selectEl) {
       const v = selectEl.value;
       if (v === '__add__') {
-        const role = selectEl.dataset.role;
-        const promptMsg = role === 'closer'
-          ? `Nuevo ${field === 'closer2' ? 'Closer #2' : 'Closer'} para ${currentLocation}:`
-          : 'Nuevo Setter (compartido entre ambas locaciones):';
-        const name = prompt(promptMsg);
-        if (!name || !name.trim()) {
-          selectEl.value = rows[index][field] || '';
-          return;
-        }
-        const added = await addAgent(role, name.trim());
-        rebuildAllAgentSelects();
-        if (added) {
-          rows[index][field] = added;
-          selectEl.value = added;
-          activateRow(index);
-          clearFieldInvalid(index, field);
-          checkProgress(index);
-          updateStats();
-        }
+        // Restore the previous selection visually while modal is open
+        selectEl.value = rows[index][field] || '';
+        openAddAgentModal(index, field, selectEl);
         return;
       }
       if (v === '__manage__') {
@@ -2207,6 +2223,46 @@
       }
       // Normal selection
       updateRow(index, field, v);
+    }
+
+    function openAddAgentModal(index, field, selectEl) {
+      const role = selectEl.dataset.role;
+      _addAgentContext = { index, field, selectEl, role };
+      const title = role === 'closer'
+        ? `Nuevo ${field === 'closer2' ? 'Closer #2' : 'Closer'}`
+        : 'Nuevo Setter';
+      const sub = role === 'closer'
+        ? `Para locación ${currentLocation}. Escribe nombre y apellido.`
+        : 'Compartido entre ambas locaciones. Escribe nombre y apellido.';
+      document.getElementById('add-agent-title').textContent = title;
+      document.getElementById('add-agent-sub').textContent = sub;
+      const input = document.getElementById('add-agent-input');
+      input.value = '';
+      document.getElementById('add-agent-overlay').style.display = 'flex';
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeAddAgentModal() {
+      document.getElementById('add-agent-overlay').style.display = 'none';
+      _addAgentContext = null;
+    }
+
+    async function confirmAddAgent() {
+      const ctx = _addAgentContext;
+      if (!ctx) return;
+      const name = document.getElementById('add-agent-input').value.trim();
+      if (!name) { document.getElementById('add-agent-input').focus(); return; }
+      closeAddAgentModal();
+      const added = await addAgent(ctx.role, name);
+      rebuildAllAgentSelects();
+      if (added) {
+        rows[ctx.index][ctx.field] = added;
+        ctx.selectEl.value = added;
+        activateRow(ctx.index);
+        clearFieldInvalid(ctx.index, ctx.field);
+        checkProgress(ctx.index);
+        updateStats();
+      }
     }
 
     let _lastManageRole = null;
@@ -2237,9 +2293,24 @@
       document.getElementById('manage-agents-overlay').style.display = 'none';
     }
 
-    async function confirmDeleteAgent(id, name) {
-      if (!confirm(`¿Eliminar "${name}" del dropdown?\n\nLos reportes históricos donde aparece su nombre NO se modifican — solo deja de aparecer en futuras selecciones.`)) return;
-      const ok = await deleteAgentById(id);
+    function confirmDeleteAgent(id, name) {
+      // Use HTML modal instead of native confirm() (blocked in iframes like GHL embed)
+      _confirmDeleteCtx = { id, name };
+      document.getElementById('confirm-delete-msg').innerHTML =
+        `Vas a eliminar a <b>${escapeHtml(name)}</b> del dropdown.<br><br>Los reportes históricos donde aparece su nombre <b>no se modifican</b> — solo deja de aparecer en futuras selecciones.`;
+      document.getElementById('confirm-delete-overlay').style.display = 'flex';
+    }
+
+    function closeConfirmDelete() {
+      document.getElementById('confirm-delete-overlay').style.display = 'none';
+      _confirmDeleteCtx = null;
+    }
+
+    async function confirmDeleteAction() {
+      const ctx = _confirmDeleteCtx;
+      if (!ctx) return;
+      closeConfirmDelete();
+      const ok = await deleteAgentById(ctx.id);
       if (ok) {
         rebuildAllAgentSelects();
         openManageAgentsModal(_lastManageRole || 'closer');
