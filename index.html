@@ -1711,7 +1711,8 @@
       if (savedLocation === 'Orlando' || savedLocation === 'Kissimmee') {
         currentLocation = savedLocation;
         updateLocationPill();
-        await refreshTodayCache();
+        // CRITICAL: also refresh agents cache so closer/setter dropdowns aren't empty
+        await Promise.all([refreshTodayCache(), refreshAgentsCache()]);
         const existing = loadTodaysReport();
         if (existing) showAlreadySent(existing);
         else showStartScreen();
@@ -2068,6 +2069,14 @@
       card.querySelectorAll('.agent-select').forEach(sel => {
         populateAgentSelect(sel, sel.dataset.role, r[sel.dataset.field] || '');
       });
+      // Defensive: if closer cache is empty for this location, re-fetch and re-populate
+      if (currentLocation && (_agentsCache.closers[currentLocation] || []).length === 0) {
+        refreshAgentsCache().then(() => {
+          card.querySelectorAll('.agent-select').forEach(sel => {
+            populateAgentSelect(sel, sel.dataset.role, rows[index]?.[sel.dataset.field] || '');
+          });
+        });
+      }
       checkProgress(index);
     }
 
