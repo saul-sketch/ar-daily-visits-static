@@ -1819,8 +1819,14 @@
       document.getElementById('counter-plus').disabled = visitCount >= MAX_CARDS;
     }
 
-    function startReport() {
+    async function startReport() {
       editMode = false;
+      // Ensure agents cache is loaded BEFORE rendering cards
+      const hasClosers = currentLocation && (_agentsCache.closers[currentLocation] || []).length > 0;
+      const hasSetters = (_agentsCache.setters || []).length > 0;
+      if (!hasClosers || !hasSetters) {
+        await refreshAgentsCache();
+      }
       document.getElementById('already-sent-screen').style.display = 'none';
       document.getElementById('edit-banner').style.display = 'none';
       document.getElementById('start-screen').style.display = 'none';
@@ -2069,14 +2075,6 @@
       card.querySelectorAll('.agent-select').forEach(sel => {
         populateAgentSelect(sel, sel.dataset.role, r[sel.dataset.field] || '');
       });
-      // Defensive: if closer cache is empty for this location, re-fetch and re-populate
-      if (currentLocation && (_agentsCache.closers[currentLocation] || []).length === 0) {
-        refreshAgentsCache().then(() => {
-          card.querySelectorAll('.agent-select').forEach(sel => {
-            populateAgentSelect(sel, sel.dataset.role, rows[index]?.[sel.dataset.field] || '');
-          });
-        });
-      }
       checkProgress(index);
     }
 
@@ -2437,8 +2435,11 @@
       updateStats();
     }
 
-    function addCard() {
+    async function addCard() {
       if (rows.length >= MAX_CARDS) return;
+      // Ensure agents cache is loaded before creating new card
+      const hasClosers = currentLocation && (_agentsCache.closers[currentLocation] || []).length > 0;
+      if (!hasClosers) await refreshAgentsCache();
       createCard(rows.length);
       updateAddBtn();
       updateStats();
