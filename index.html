@@ -2826,12 +2826,19 @@
         : '—';
 
       // Sales detail (max 10 to respect Discord limit)
+      const isEmpty = s => !s || !String(s).trim() || ['n/a','na','—','-'].includes(String(s).trim().toLowerCase());
       const salesDetail = sales.slice(0, 10).map(v => {
         const name = (v.name && v.name.trim()) ? v.name.trim() : (v.no_contact ? '— sin info —' : '—');
-        const vehicle = v.vehicle ? v.vehicle.trim() : '—';
-        const lender = v.lender ? v.lender.trim() : '—';
-        const closer = v.closer && v.closer.trim() && v.closer.toLowerCase() !== 'n/a' ? v.closer.trim() : '—';
-        return `• ${name} — ${vehicle} — ${lender} — Closer ${closer}`;
+        const vehicle = !isEmpty(v.vehicle) ? v.vehicle.trim() : '—';
+        const lender = !isEmpty(v.lender) ? v.lender.trim() : '—';
+        const c1 = !isEmpty(v.closer) ? v.closer.trim() : null;
+        const c2 = !isEmpty(v.closer2) ? v.closer2.trim() : null;
+        const setter = !isEmpty(v.setter) ? v.setter.trim() : null;
+        const isSelfGen = v.scheduled_by === 'Self-gen' || v.subgen === true;
+        const closerLabel = c1 && c2 ? `${c1} + ${c2}` : (c1 || c2 || '—');
+        const setterPart = setter ? ` · Setter ${setter}` : '';
+        const sgBadge = isSelfGen ? '  🌟 **SELF-GEN**' : '';
+        return `• ${name} — ${vehicle} — ${lender} — Closer ${closerLabel}${setterPart}${sgBadge}`;
       }).join('\n');
       const salesDetailLine = sales.length === 0 ? '_Sin ventas hoy_' : salesDetail + (sales.length > 10 ? `\n_…y ${sales.length - 10} más_` : '');
 
