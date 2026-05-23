@@ -2831,16 +2831,9 @@
         const vehicle = v.vehicle ? v.vehicle.trim() : '—';
         const lender = v.lender ? v.lender.trim() : '—';
         const closer = v.closer && v.closer.trim() && v.closer.toLowerCase() !== 'n/a' ? v.closer.trim() : '—';
-        const profit = v.net_profit ? '$' + Number(v.net_profit).toLocaleString('en-US') : '$0';
-        return `• ${name} — ${vehicle} — ${lender} — Closer ${closer} — ${profit}`;
+        return `• ${name} — ${vehicle} — ${lender} — Closer ${closer}`;
       }).join('\n');
       const salesDetailLine = sales.length === 0 ? '_Sin ventas hoy_' : salesDetail + (sales.length > 10 ? `\n_…y ${sales.length - 10} más_` : '');
-
-      // Financials
-      const netProfit = sales.reduce((s, v) => s + (v.net_profit || 0), 0);
-      const downCol = sales.reduce((s, v) => s + (v.down_collected || 0), 0);
-      const pd = sales.reduce((s, v) => s + (v.down_deferred || 0), 0);
-      const fmtMoney = n => '$' + Number(n || 0).toLocaleString('en-US');
 
       // Date label
       const d = new Date(report.date + 'T00:00:00');
@@ -2873,11 +2866,6 @@
             {
               name: 'Detalle ventas',
               value: salesDetailLine.slice(0, 1020),
-              inline: false
-            },
-            {
-              name: '💵 Financiero',
-              value: `Net Profit **${fmtMoney(netProfit)}**  ·  Down **${fmtMoney(downCol)}**  ·  PD **${fmtMoney(pd)}**`,
               inline: false
             }
           ],
