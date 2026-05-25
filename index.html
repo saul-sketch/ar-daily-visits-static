@@ -2845,7 +2845,53 @@
       // Date label
       const d = new Date(report.date + 'T00:00:00');
       const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const monthsFull = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
       const dateNice = `${d.getDate()} ${months[d.getMonth()]}`;
+
+      // Month-to-date + pace + Δ vs previous month
+      let paceLine = '';
+      try {
+        const yy = d.getFullYear();
+        const mm = d.getMonth(); // 0-indexed
+        const monthStart = `${yy}-${String(mm+1).padStart(2,'0')}-01`;
+        const monthEnd = new Date(yy, mm+1, 0); // last day of current month
+        const monthEndISO = `${yy}-${String(mm+1).padStart(2,'0')}-${String(monthEnd.getDate()).padStart(2,'0')}`;
+        const daysInMonth = monthEnd.getDate();
+        const dayOfMonth = d.getDate();
+        // Previous month range
+        const prevMm = mm === 0 ? 11 : mm - 1;
+        const prevYy = mm === 0 ? yy - 1 : yy;
+        const prevStart = `${prevYy}-${String(prevMm+1).padStart(2,'0')}-01`;
+        const prevEnd = new Date(prevYy, prevMm+1, 0);
+        const prevEndISO = `${prevYy}-${String(prevMm+1).padStart(2,'0')}-${String(prevEnd.getDate()).padStart(2,'0')}`;
+
+        const res = await fetch(`${SUPA_URL}/rest/v1/ar_daily_reports?select=date,location,visits&date=gte.${prevStart}&date=lte.${monthEndISO}&location=eq.${encodeURIComponent(report.location)}`, { headers: SUPA_HEADERS });
+        if (res.ok) {
+          const rows = await res.json();
+          let mtd = 0, prev = 0;
+          rows.forEach(r => {
+            const isCur = r.date >= monthStart && r.date <= monthEndISO;
+            const isPrev = r.date >= prevStart && r.date <= prevEndISO;
+            const salesInDay = (r.visits || []).filter(v => v.sale === true).length;
+            if (isCur) mtd += salesInDay;
+            else if (isPrev) prev += salesInDay;
+          });
+          const pace = dayOfMonth > 0 ? Math.round(mtd / dayOfMonth * daysInMonth) : mtd;
+          const delta = pace - prev;
+          const arrow = delta > 0 ? '▲' : (delta < 0 ? '▼' : '●');
+          const sign = delta > 0 ? '+' : '';
+          const prevLabel = monthsFull[prevMm];
+          let deltaPart = '';
+          if (prev > 0) {
+            deltaPart = `  ·  ${arrow} **${sign}${delta}** vs ${prevLabel} (${prev})`;
+          } else {
+            deltaPart = `  ·  ${prevLabel} sin data`;
+          }
+          paceLine = `Llevamos **${mtd}** en ${dayOfMonth} día${dayOfMonth===1?'':'s'}  ·  pace **${pace}** al cierre${deltaPart}`;
+        }
+      } catch (e) {
+        console.warn('pace calc failed:', e);
+      }
 
       const body = {
         content: `<@${DISCORD_USER_SAUL}> <@${DISCORD_USER_CHARLES}>`,
@@ -2874,7 +2920,12 @@
               name: 'Detalle ventas',
               value: salesDetailLine.slice(0, 1020),
               inline: false
-            }
+            },
+            ...(paceLine ? [{
+              name: `📈 Mes (${monthsFull[d.getMonth()]}) — ${report.location}`,
+              value: paceLine,
+              inline: false
+            }] : [])
           ],
           footer: { text: 'AR Sales Reports' }
         }]
