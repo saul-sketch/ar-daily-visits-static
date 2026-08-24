@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="form-version" content="2026-08-12-2">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
   <title>Auto Republic — Reporte Diario de Visitas</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -362,6 +365,11 @@
     }
     .toggle-group.invalid {
       border-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+    }
+    label[data-field="sentAllBanks"].invalid {
+      border-color: var(--red) !important;
+      background-color: #fef2f2;
       box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
     }
 
@@ -1195,12 +1203,14 @@
       .form-footer { flex-direction: column; gap: 12px; padding: 16px; }
       .form-footer .btn { width: 100%; justify-content: center; }
     }
-  </style>
+  .ar-logo{display:inline-block;background-image:url('data:image/png;base64,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');background-position:left center;background-size:contain;background-repeat:no-repeat;flex:0 0 auto;}
+</style>
 </head>
 <body>
   <!-- Login Screen -->
   <div class="login-screen" id="login-screen">
     <div class="login-card">
+      <div class="ar-logo" style="width:150px;height:92px;margin:0 auto 8px;"></div>
       <div class="login-logo">Auto Republic</div>
       <div class="login-subtitle">Reporte Diario de Visitas</div>
       <input type="password" id="login-password" placeholder="Tu contraseña" autocomplete="off">
@@ -1213,9 +1223,12 @@
   <!-- Main App (hidden until login) -->
   <div class="container" id="main-container" style="display:none;">
     <div class="header">
-      <div class="header-brand">
-        <h1>Auto Republic</h1>
-        <div class="subtitle">Reporte Diario de Visitas</div>
+      <div class="header-brand" style="display:flex;align-items:center;gap:12px;">
+        <div class="ar-logo" style="width:60px;height:40px;"></div>
+        <div>
+          <h1>Auto Republic</h1>
+          <div class="subtitle">Reporte Diario de Visitas</div>
+        </div>
       </div>
       <div class="header-right">
         <div class="location-pill" id="location-pill" onclick="changeLocation()" title="Cambiar locación" style="display:none;">
@@ -1380,14 +1393,43 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Add Agent Modal (replaces prompt() that doesn't work in GHL iframe) -->
+  <div id="add-agent-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='add-agent-overlay') closeAddAgentModal()">
+    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:100%; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+      <h3 id="add-agent-title" style="margin:0 0 6px 0; font-size:17px; font-weight:700;">Buscar en el CRM</h3>
+      <p id="add-agent-sub" style="margin:0 0 14px 0; font-size:13px; color:#6b7280;">Escribe el nombre y elige a la persona del CRM.</p>
+      <input type="text" id="add-agent-input" placeholder="Buscar persona…"
+        autocomplete="off"
+        style="width:100%; padding:12px 14px; border:1.5px solid #cbd5e1; border-radius:10px; font-size:15px; font-family:inherit; box-sizing:border-box;"
+        oninput="crmSearchFilter()"
+        onkeydown="if(event.key==='Escape') closeAddAgentModal();">
+      <div id="crm-search-results" style="margin-top:12px; max-height:320px; overflow-y:auto;"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+        <button onclick="closeAddAgentModal()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal (replaces confirm()) -->
+  <div id="confirm-delete-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:65; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='confirm-delete-overlay') closeConfirmDelete()">
+    <div style="background:white; padding:24px; border-radius:14px; width:380px; max-width:100%; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+      <h3 style="margin:0 0 8px 0; font-size:17px; font-weight:700;">¿Eliminar agente?</h3>
+      <p id="confirm-delete-msg" style="margin:0 0 18px 0; font-size:13px; color:#6b7280; line-height:1.5;">—</p>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button onclick="closeConfirmDelete()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cancelar</button>
+        <button onclick="confirmDeleteAction()" style="padding:10px 16px; background:#ef4444; color:white; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Manage Agents Modal -->
-  <div id="manage-agents-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center;" onclick="if(event.target.id==='manage-agents-overlay') closeManageAgentsModal()">
-    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:90vw; max-height:80vh; overflow:auto;">
+  <div id="manage-agents-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target.id==='manage-agents-overlay') closeManageAgentsModal()">
+    <div style="background:white; padding:24px; border-radius:14px; width:420px; max-width:100%; max-height:80vh; overflow:auto;">
       <h3 id="manage-agents-title" style="margin:0 0 4px 0; font-size:17px;">Eliminar agentes</h3>
       <p style="margin:0 0 16px 0; font-size:12px; color:#6b7280;">Click "× Eliminar" para sacar al agente del dropdown.</p>
       <div id="manage-agents-body"></div>
       <div style="display:flex; justify-content:flex-end; margin-top:16px;">
-        <button class="filter-tab" onclick="closeManageAgentsModal()" style="border:1px solid #e5e7eb;">Cerrar</button>
+        <button onclick="closeManageAgentsModal()" style="padding:10px 16px; background:#f1f5f9; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">Cerrar</button>
       </div>
     </div>
   </div>
@@ -1528,10 +1570,57 @@
       return _agentsCache.setters || [];
     }
 
-    async function addAgent(role, name) {
+    // ===== Lista maestra del CRM (búsqueda instantánea, se lee de la copia sincronizada) =====
+    let _crmRoster = [];
+    async function refreshCrmRoster() {
+      try {
+        const res = await fetch(`${SUPA_URL}/rest/v1/crm_roster?select=crm_user_id,name,team,active&active=eq.true&order=name.asc`, { headers: SUPA_HEADERS });
+        if (res.ok) _crmRoster = await res.json();
+      } catch (e) { console.error('refreshCrmRoster failed', e); }
+    }
+    function crmSearchFilter() {
+      const q = (document.getElementById('add-agent-input').value || '').trim().toLowerCase();
+      const box = document.getElementById('crm-search-results');
+      if (!box) return;
+      if (!_crmRoster.length) { box.innerHTML = '<div style="color:#94a3b8; font-size:13px; padding:10px 4px;">Cargando lista del CRM…</div>'; return; }
+      if (!q) { box.innerHTML = '<div style="color:#94a3b8; font-size:13px; padding:10px 4px;">Empieza a escribir para buscar…</div>'; return; }
+      const norm = s => (s || '').toLowerCase();
+      const hits = _crmRoster.filter(p => norm(p.name).includes(q)).slice(0, 30);
+      if (!hits.length) { box.innerHTML = '<div style="color:#94a3b8; font-size:13px; padding:10px 4px;">Nadie en el CRM con ese nombre.</div>'; return; }
+      box.innerHTML = hits.map(p => `
+        <button type="button" onclick="pickCrmPerson('${escapeAttr(p.crm_user_id)}', '${escapeAttr(p.name)}')"
+          style="display:flex; justify-content:space-between; align-items:center; width:100%; text-align:left; padding:11px 12px; border:1px solid #e5e7eb; border-radius:9px; margin-bottom:6px; background:white; cursor:pointer; font-family:inherit;">
+          <span style="font-weight:600; font-size:14px; color:#0f172a;">${escapeHtml(p.name)}</span>
+          ${p.team ? `<span style="font-size:11px; color:#64748b;">${escapeHtml(teamLabel(p.team))}</span>` : ''}
+        </button>`).join('');
+    }
+    function teamLabel(t) {
+      return { 'call-center': 'Call Center', 'closers-orlando': 'Closers Orlando', 'closers-kissimmee': 'Closers Kissimmee' }[t] || '';
+    }
+    async function pickCrmPerson(crmUserId, name) {
+      const ctx = _addAgentContext;
+      if (!ctx) return;
+      closeAddAgentModal();
+      const added = await addAgent(ctx.role, name, crmUserId);
+      rebuildAllAgentSelects();
+      if (added) {
+        rows[ctx.index][ctx.field] = added;
+        ctx.selectEl.value = added;
+        activateRow(ctx.index);
+        clearFieldInvalid(ctx.index, ctx.field);
+        checkProgress(ctx.index);
+        updateStats();
+      }
+    }
+
+    async function addAgent(role, name, crmUserId) {
       const cleaned = String(name || '').trim();
       if (!cleaned) return null;
+      // Si ya existe en la lista (mismo nombre + rol + locación), reúsalo — no dupliques.
+      const existing = (role === 'closer' ? listClosers() : listSetters()).find(a => a.name.toLowerCase() === cleaned.toLowerCase());
+      if (existing) return existing.name;
       const body = { name: cleaned, role, created_by: currentUser };
+      if (crmUserId) body.crm_user_id = crmUserId;
       if (role === 'closer') body.location = currentLocation;
       const res = await fetch(`${SUPA_URL}/rest/v1/ar_agents`, {
         method: 'POST',
@@ -1541,7 +1630,6 @@
       if (!res.ok) {
         const txt = await res.text();
         if (txt.includes('duplicate') || res.status === 409) {
-          alert(`"${cleaned}" ya existe en la lista`);
           await refreshAgentsCache();
           return cleaned;
         }
@@ -1611,7 +1699,7 @@
       localStorage.setItem('ar_location', loc);
       updateLocationPill();
       document.getElementById('location-screen').style.display = 'none';
-      await Promise.all([refreshTodayCache(), refreshAgentsCache()]);
+      await Promise.all([refreshTodayCache(), refreshAgentsCache(), refreshCrmRoster()]);
       const existing = loadTodaysReport();
       if (existing) showAlreadySent(existing);
       else showStartScreen();
@@ -1711,7 +1799,8 @@
       if (savedLocation === 'Orlando' || savedLocation === 'Kissimmee') {
         currentLocation = savedLocation;
         updateLocationPill();
-        await refreshTodayCache();
+        // CRITICAL: also refresh agents cache so closer/setter dropdowns aren't empty
+        await Promise.all([refreshTodayCache(), refreshAgentsCache()]);
         const existing = loadTodaysReport();
         if (existing) showAlreadySent(existing);
         else showStartScreen();
@@ -1784,12 +1873,22 @@
           sale: v.sale,
           subgen: v.subgen != null ? v.subgen : null,
           dealNumber: v.deal_number || '',
-          netProfit: v.net_profit != null ? String(v.net_profit) : '',
+          netProfit: v.net_profit != null ? String(Math.abs(v.net_profit)) : '',
+          netProfitNegative: v.net_profit != null && v.net_profit < 0,
           lender: v.lender || '',
           vehicle: v.vehicle || '',
           downCollected: v.down_collected != null ? String(v.down_collected) : '',
           downDeferred: v.down_deferred != null ? String(v.down_deferred) : '',
-          downMethod: v.down_method || ''
+          downMethod: v.down_method || '',
+          deniedDeal: v.denied_deal || '',
+          sentAllBanks: v.sent_all_banks === true,
+          downAvailable: v.down_available != null ? String(v.down_available) : '',
+          approvedDeal: v.approved_deal || '',
+          noApplyReason: v.no_apply_reason || '',
+          noApplyRequirement: v.no_apply_requirement || '',
+          noApplyReqOther: v.no_apply_requirement_other || '',
+          deniedReason: v.denied_reason || '',
+          deniedReasonOther: v.denied_reason_other || ''
         });
         syncCardUI(i);
       });
@@ -1818,8 +1917,14 @@
       document.getElementById('counter-plus').disabled = visitCount >= MAX_CARDS;
     }
 
-    function startReport() {
+    async function startReport() {
       editMode = false;
+      // Ensure agents cache is loaded BEFORE rendering cards
+      const hasClosers = currentLocation && (_agentsCache.closers[currentLocation] || []).length > 0;
+      const hasSetters = (_agentsCache.setters || []).length > 0;
+      if (!hasClosers || !hasSetters) {
+        await refreshAgentsCache();
+      }
       document.getElementById('already-sent-screen').style.display = 'none';
       document.getElementById('edit-banner').style.display = 'none';
       document.getElementById('start-screen').style.display = 'none';
@@ -1848,7 +1953,7 @@
         scheduledBy: '', noContact: false,
         phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
         applied: null, result: null, sale: null,
-        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null
+        netProfit: '', netProfitNegative: false, lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null, deniedDeal: '', sentAllBanks: false, downAvailable: '', approvedDeal: '', noApplyReason: '', noApplyRequirement: '', noApplyReqOther: '', deniedReason: '', deniedReasonOther: ''
       });
 
       const card = document.createElement('div');
@@ -1988,12 +2093,102 @@
           </div>
         </div>
 
+        <!-- Step 5c: No aplicó — por qué (obligatorio) -->
+        <div class="step" id="step-noapply-${index}">
+          <div class="field" style="margin-top:12px;">
+            <label class="field-label">¿Por qué no aplicó?<span class="req">*</span></label>
+            <select class="field-select" data-field="noApplyReason" onchange="updateRow(${index}, 'noApplyReason', this.value)">
+              <option value="">Seleccionar...</option>
+              <option>No quiso aplicar</option>
+              <option>No le gustó el inventario</option>
+              <option>Solo estaba mirando</option>
+              <option>No tenía los requisitos</option>
+            </select>
+          </div>
+          <div class="step-inline" id="step-noapply-req-${index}">
+            <div class="field" style="border-left:2px solid var(--gray-300); padding-left:12px; margin-top:10px;">
+              <label class="field-label">¿Qué requisito le faltó?<span class="req">*</span></label>
+              <select class="field-select" data-field="noApplyRequirement" onchange="updateRow(${index}, 'noApplyRequirement', this.value)">
+                <option value="">Seleccionar...</option>
+                <option>No tenía identificación</option>
+                <option>No tenía trabajo / ingresos comprobables</option>
+                <option>Otro</option>
+              </select>
+              <div class="step-inline" id="step-noapply-reqother-${index}" style="margin-top:8px;">
+                <input type="text" class="field-input" data-field="noApplyReqOther" placeholder="Escribe qué fue, para saber qué pasa..."
+                  oninput="updateRow(${index}, 'noApplyReqOther', this.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5d: Negado — Deal # + confirmación (obligatorio) -->
+        <div class="step" id="step-denied-${index}">
+          <div style="border-top:1px dashed var(--gray-300); padding-top:14px; margin-top:4px;">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--red); margin-bottom:12px;">Detalles del negado</div>
+            <div class="field" style="margin-bottom:12px;">
+              <label class="field-label">Razón del negado<span class="req">*</span></label>
+              <select class="field-select" data-field="deniedReason" onchange="updateRow(${index}, 'deniedReason', this.value)">
+                <option value="">Seleccionar...</option>
+                <option>Crédito insuficiente</option>
+                <option>Sin historial de crédito</option>
+                <option>Ingreso insuficiente</option>
+                <option>Carro abierto — no aprobaron 2do auto</option>
+                <option>Upside down en el trade-in</option>
+                <option>Poco tiempo en el trabajo</option>
+                <option>Down payment insuficiente</option>
+                <option>Documentos incompletos</option>
+                <option>Bancarrota / repo reciente</option>
+                <option>Otro</option>
+              </select>
+              <div class="step-inline" id="step-denied-other-${index}" style="margin-top:8px;">
+                <input type="text" class="field-input" data-field="deniedReasonOther" placeholder="Escribe la razón..."
+                  oninput="updateRow(${index}, 'deniedReasonOther', this.value)">
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:12px;">
+              <label class="field-label">DealerCenter Deal #<span class="req">*</span><span class="opt">(deal que fue negado)</span></label>
+              <input type="text" class="field-input" data-field="deniedDeal" placeholder="Número de deal negado"
+                oninput="updateRow(${index}, 'deniedDeal', this.value)">
+            </div>
+            <label data-field="sentAllBanks" style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; padding:12px 14px; border:1.5px solid var(--gray-300); border-radius:10px;">
+              <input type="checkbox" style="margin-top:1px; width:18px; height:18px; flex:0 0 auto;"
+                onchange="updateRow(${index}, 'sentAllBanks', this.checked)">
+              <span style="font-size:14px; line-height:1.4;">Confirmo que envié este deal a <strong>todos los bancos</strong> antes de marcarlo como negado.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 5d-b: Aprobado no cerrado — Deal # (obligatorio) -->
+        <div class="step" id="step-approved-deal-${index}">
+          <div class="field" style="margin-top:12px;">
+            <label class="field-label">DealerCenter Deal #<span class="req">*</span><span class="opt">(deal aprobado, aún sin cerrar)</span></label>
+            <input type="text" class="field-input" data-field="approvedDeal" placeholder="Número de deal aprobado"
+              oninput="updateRow(${index}, 'approvedDeal', this.value)">
+          </div>
+        </div>
+
+        <!-- Step 5e: Down payment que tenía (negados + aprobados no cerrados) -->
+        <div class="step" id="step-down-noclose-${index}">
+          <div class="field" style="margin-top:12px;">
+            <label class="field-label">Down payment que tenía el cliente<span class="req">*</span><span class="opt">(el día de la visita)</span></label>
+            <div class="money-wrapper">
+              <input type="text" inputmode="numeric" class="field-input money" data-field="downAvailable" placeholder="0.00"
+                oninput="updateMoney(${index}, 'downAvailable', this)">
+            </div>
+          </div>
+        </div>
+
         <!-- Step 6: F&I details -->
         <div class="step step-fni" id="step-fni-${index}">
           <span class="fni-divider-text">Detalles de la venta</span>
           <div class="field-grid grid-fni-1" style="margin-bottom:12px;">
             <div class="field">
               <label class="field-label">Net profit<span class="req">*</span></label>
+              <div class="toggle-group" data-toggle="netProfitSign" style="margin-bottom:8px;">
+                <button type="button" class="toggle-btn" onclick="toggleNetProfitSign(${index}, false)">Ganancia</button>
+                <button type="button" class="toggle-btn" onclick="toggleNetProfitSign(${index}, true)">Pérdida</button>
+              </div>
               <div class="money-wrapper">
                 <input type="text" inputmode="numeric" class="field-input money" data-field="netProfit" placeholder="0.00"
                   oninput="updateMoney(${index}, 'netProfit', this)">
@@ -2096,14 +2291,18 @@
       // - Self-gen / Call Center: always need contact
       // - Walk-in: only if has contact (noContact === false explicitly)
       const scheduledChosen = !!r.scheduledBy;
-      const skipContact = isWalkIn && r.noContact === true;
+      // Walk-in "no tengo datos" only skips contact while the visit did NOT apply.
+      // If they applied, contact becomes mandatory (you can't apply without data).
+      const skipContact = isWalkIn && r.noContact === true && r.applied !== true;
       const walkInContactDecided = isWalkIn && (r.noContact === true || r.noContact === false) && r._walkInDecided === true;
       const showContact = scheduledChosen && !skipContact && (!isWalkIn || walkInContactDecided);
       setStep(`step-contact-${i}`, showContact);
 
-      // Step 2 (attribution): only after either contact filled OR skipped (Walk-in no-contact)
+      // Step 2 (attribution): only after either contact filled OR skipped (Walk-in no-contact).
+      // `r.applied !== null` keeps later steps open when applying auto-clears the no-data
+      // flag — applied can only ever be set after this gate was already passed.
       const phoneDigits = r.phone.replace(/\D/g, '');
-      const contactReady = skipContact || (phoneDigits.length === 10 && r.name.trim());
+      const contactReady = (isWalkIn && r.noContact === true) || r.applied !== null || (phoneDigits.length === 10 && r.name.trim());
       const showAttr = scheduledChosen && contactReady && (!isWalkIn || walkInContactDecided);
       setStep(`step-attr-${i}`, showAttr);
 
@@ -2118,6 +2317,24 @@
       // Step 5: result === approved → show venta
       const showSale = showResult && r.result === 'approved';
       setStep(`step-sale-${i}`, showSale);
+
+      // Step 5d: result === denied → show denied deal # + "sent to all banks" confirmation
+      const isDenied = showResult && r.result === 'denied';
+      setStep(`step-denied-${i}`, isDenied);
+
+      // Step 5e: down payment they had on visit day — for denied OR approved-not-sold
+      const isApprovedNotSold = showSale && r.result === 'approved' && r.sale === false;
+      setStep(`step-down-noclose-${i}`, isDenied || isApprovedNotSold);
+      setStep(`step-approved-deal-${i}`, isApprovedNotSold);
+
+      // Step 5c: applied === false → "¿por qué no aplicó?" + requirement sub-detail
+      const isNoApply = showApplied && r.applied === false;
+      setStep(`step-noapply-${i}`, isNoApply);
+      setStep(`step-noapply-req-${i}`, isNoApply && r.noApplyReason === 'No tenía los requisitos');
+      setStep(`step-noapply-reqother-${i}`, isNoApply && r.noApplyReason === 'No tenía los requisitos' && r.noApplyRequirement === 'Otro');
+
+      // Denied reason "Otro" → free text
+      setStep(`step-denied-other-${i}`, isDenied && r.deniedReason === 'Otro');
 
       // Step 5b + 6: venta === true → show Deal # and F&I
       const showFni = showSale && r.sale === true;
@@ -2142,7 +2359,7 @@
         '<option value="">Seleccionar...</option>',
         '<option value="N/A">N/A</option>',
         ...list.map(a => `<option value="${escapeAttr(a.name)}">${escapeHtml(a.name)}</option>`),
-        '<option value="__add__" style="font-weight:600; color:#10b981;">+ Agregar nuevo...</option>'
+        '<option value="__add__" style="font-weight:600; color:#10b981;">🔍 Buscar en el CRM...</option>'
       ];
       if (list.length > 0) {
         optionsHtml.push('<option value="__manage__" style="font-weight:600; color:#ef4444;">⚙ Eliminar agente...</option>');
@@ -2169,28 +2386,16 @@
       });
     }
 
+    // State for inline modals (work inside iframes where prompt()/confirm() are blocked)
+    let _addAgentContext = null;     // { index, field, selectEl, role }
+    let _confirmDeleteCtx = null;    // { id, name, role }
+
     async function onAgentSelectChange(index, field, selectEl) {
       const v = selectEl.value;
       if (v === '__add__') {
-        const role = selectEl.dataset.role;
-        const promptMsg = role === 'closer'
-          ? `Nuevo ${field === 'closer2' ? 'Closer #2' : 'Closer'} para ${currentLocation}:`
-          : 'Nuevo Setter (compartido entre ambas locaciones):';
-        const name = prompt(promptMsg);
-        if (!name || !name.trim()) {
-          selectEl.value = rows[index][field] || '';
-          return;
-        }
-        const added = await addAgent(role, name.trim());
-        rebuildAllAgentSelects();
-        if (added) {
-          rows[index][field] = added;
-          selectEl.value = added;
-          activateRow(index);
-          clearFieldInvalid(index, field);
-          checkProgress(index);
-          updateStats();
-        }
+        // Restore the previous selection visually while modal is open
+        selectEl.value = rows[index][field] || '';
+        openAddAgentModal(index, field, selectEl);
         return;
       }
       if (v === '__manage__') {
@@ -2200,6 +2405,49 @@
       }
       // Normal selection
       updateRow(index, field, v);
+    }
+
+    function openAddAgentModal(index, field, selectEl) {
+      const role = selectEl.dataset.role;
+      _addAgentContext = { index, field, selectEl, role };
+      const title = role === 'closer'
+        ? `Nuevo ${field === 'closer2' ? 'Closer #2' : 'Closer'}`
+        : 'Nuevo Setter';
+      const sub = role === 'closer'
+        ? `Para locación ${currentLocation}. Escribe nombre y apellido.`
+        : 'Compartido entre ambas locaciones. Escribe nombre y apellido.';
+      document.getElementById('add-agent-title').textContent = 'Buscar en el CRM';
+      document.getElementById('add-agent-sub').textContent = role === 'closer'
+        ? `${field === 'closer2' ? 'Closer #2' : 'Closer'} para ${currentLocation} — busca y elige del CRM.`
+        : 'Setter — busca y elige del CRM.';
+      const input = document.getElementById('add-agent-input');
+      input.value = '';
+      crmSearchFilter();
+      document.getElementById('add-agent-overlay').style.display = 'flex';
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeAddAgentModal() {
+      document.getElementById('add-agent-overlay').style.display = 'none';
+      _addAgentContext = null;
+    }
+
+    async function confirmAddAgent() {
+      const ctx = _addAgentContext;
+      if (!ctx) return;
+      const name = document.getElementById('add-agent-input').value.trim();
+      if (!name) { document.getElementById('add-agent-input').focus(); return; }
+      closeAddAgentModal();
+      const added = await addAgent(ctx.role, name);
+      rebuildAllAgentSelects();
+      if (added) {
+        rows[ctx.index][ctx.field] = added;
+        ctx.selectEl.value = added;
+        activateRow(ctx.index);
+        clearFieldInvalid(ctx.index, ctx.field);
+        checkProgress(ctx.index);
+        updateStats();
+      }
     }
 
     let _lastManageRole = null;
@@ -2230,9 +2478,24 @@
       document.getElementById('manage-agents-overlay').style.display = 'none';
     }
 
-    async function confirmDeleteAgent(id, name) {
-      if (!confirm(`¿Eliminar "${name}" del dropdown?\n\nLos reportes históricos donde aparece su nombre NO se modifican — solo deja de aparecer en futuras selecciones.`)) return;
-      const ok = await deleteAgentById(id);
+    function confirmDeleteAgent(id, name) {
+      // Use HTML modal instead of native confirm() (blocked in iframes like GHL embed)
+      _confirmDeleteCtx = { id, name };
+      document.getElementById('confirm-delete-msg').innerHTML =
+        `Vas a eliminar a <b>${escapeHtml(name)}</b> del dropdown.<br><br>Los reportes históricos donde aparece su nombre <b>no se modifican</b> — solo deja de aparecer en futuras selecciones.`;
+      document.getElementById('confirm-delete-overlay').style.display = 'flex';
+    }
+
+    function closeConfirmDelete() {
+      document.getElementById('confirm-delete-overlay').style.display = 'none';
+      _confirmDeleteCtx = null;
+    }
+
+    async function confirmDeleteAction() {
+      const ctx = _confirmDeleteCtx;
+      if (!ctx) return;
+      closeConfirmDelete();
+      const ok = await deleteAgentById(ctx.id);
       if (ok) {
         rebuildAllAgentSelects();
         openManageAgentsModal(_lastManageRole || 'closer');
@@ -2350,6 +2613,10 @@
 
     function toggleApplied(index, value) {
       rows[index].applied = rows[index].applied === value ? null : value;
+      // Didn't apply → no result/sale downstream (keeps saved data consistent)
+      if (rows[index].applied !== true) { rows[index].result = null; rows[index].sale = null; }
+      // Applied ⇒ we HAVE the client's data: auto-clear the walk-in "no tengo datos" flag
+      if (rows[index].applied === true && rows[index].noContact === true) { rows[index].noContact = false; rows[index]._walkInDecided = true; }
       activateRow(index);
       if (rows[index].applied !== null) clearToggleInvalid(index, 'applied');
       renderToggles(index);
@@ -2359,6 +2626,8 @@
 
     function toggleResult(index, value) {
       rows[index].result = rows[index].result === value ? null : value;
+      // A non-approved result can't be a sale — clear it so no sale lingers as "denied"
+      if (rows[index].result !== 'approved') rows[index].sale = null;
       activateRow(index);
       if (rows[index].result !== null) clearToggleInvalid(index, 'result');
       renderToggles(index);
@@ -2372,6 +2641,13 @@
       if (rows[index].sale !== null) clearToggleInvalid(index, 'sale');
       renderToggles(index);
       checkProgress(index);
+      updateStats();
+    }
+
+    function toggleNetProfitSign(index, isNegative) {
+      rows[index].netProfitNegative = isNegative;
+      activateRow(index);
+      renderToggles(index);
       updateStats();
     }
 
@@ -2408,6 +2684,13 @@
       const s = card.querySelector('[data-toggle="sale"]').querySelectorAll('.toggle-btn');
       s[0].className = 'toggle-btn' + (r.sale === true ? ' active-sale' : '');
       s[1].className = 'toggle-btn' + (r.sale === false ? ' active-nosale' : '');
+
+      const npSignEl = card.querySelector('[data-toggle="netProfitSign"]');
+      if (npSignEl) {
+        const np = npSignEl.querySelectorAll('.toggle-btn');
+        np[0].className = 'toggle-btn' + (r.netProfitNegative === false ? ' active-sale' : '');
+        np[1].className = 'toggle-btn' + (r.netProfitNegative === true ? ' active-nosale' : '');
+      }
     }
 
     function clearRow(index) {
@@ -2415,7 +2698,7 @@
         scheduledBy: '', noContact: false,
         phone: '', name: '', source: '', setter: '', closer: '', closer2: '',
         applied: null, result: null, sale: null,
-        netProfit: '', lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null
+        netProfit: '', netProfitNegative: false, lender: '', vehicle: '', downCollected: '', downDeferred: '', downMethod: '', dealNumber: '', subgen: null, deniedDeal: '', sentAllBanks: false, downAvailable: '', approvedDeal: '', noApplyReason: '', noApplyRequirement: '', noApplyReqOther: '', deniedReason: '', deniedReasonOther: ''
       };
       clearInvalid(index);
       const card = getCard(index);
@@ -2423,13 +2706,17 @@
       card.classList.remove('filled', 'has-sale');
       card.querySelectorAll('.field-input').forEach(i => i.value = '');
       card.querySelectorAll('.field-select').forEach(s => s.value = '');
+      card.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
       renderToggles(index);
       checkProgress(index);
       updateStats();
     }
 
-    function addCard() {
+    async function addCard() {
       if (rows.length >= MAX_CARDS) return;
+      // Ensure agents cache is loaded before creating new card
+      const hasClosers = currentLocation && (_agentsCache.closers[currentLocation] || []).length > 0;
+      if (!hasClosers) await refreshAgentsCache();
       createCard(rows.length);
       updateAddBtn();
       updateStats();
@@ -2512,10 +2799,13 @@
       const card = getCard(index);
       const r = rows[index];
 
-      ['phone','name','source','vehicle','dealNumber','netProfit','downCollected','downDeferred','downMethod'].forEach(f => {
+      ['phone','name','source','vehicle','dealNumber','netProfit','downCollected','downDeferred','downMethod','deniedDeal','downAvailable','approvedDeal','noApplyReason','noApplyRequirement','noApplyReqOther','deniedReason','deniedReasonOther'].forEach(f => {
         const el = card.querySelector(`[data-field="${f}"]`);
         if (el && r[f] !== undefined && r[f] !== null) el.value = r[f];
       });
+      // Denied: "sent to all banks" confirmation checkbox
+      const sbChk = card.querySelector('[data-field="sentAllBanks"] input[type="checkbox"]');
+      if (sbChk) sbChk.checked = r.sentAllBanks === true;
       // Agent selects (closer, closer2, setter) need populate to handle sticky values
       ['setter','closer','closer2'].forEach(f => {
         const sel = card.querySelector(`[data-field="${f}"]`);
@@ -2556,8 +2846,9 @@
       // For Walk-in, user must explicitly choose "tengo / no tengo"
       if (isWalkIn && r._walkInDecided !== true) errs.push('hasContact');
 
-      // Contact (phone + name): required UNLESS Walk-in + no-contact
-      const skipContact = isWalkIn && r.noContact === true;
+      // Contact (phone + name): required UNLESS Walk-in + no-contact — but if the
+      // visit APPLIED, contact is always mandatory (an application has the data).
+      const skipContact = isWalkIn && r.noContact === true && r.applied !== true;
       if (!skipContact) {
         const phoneDigits = r.phone.replace(/\D/g, '');
         if (phoneDigits.length !== 10) errs.push('phone');
@@ -2576,8 +2867,7 @@
           if (r.sale === null) errs.push('sale');
           if (r.sale === true) {
             if (!r.dealNumber.trim()) errs.push('dealNumber');
-            const amt = parseFloat(r.netProfit);
-            if (!amt || amt <= 0) errs.push('netProfit');
+            if (r.netProfit === '' || r.netProfit === null || isNaN(parseFloat(r.netProfit))) errs.push('netProfit');
             if (!r.lender.trim()) errs.push('lender');
             if (!r.vehicle.trim()) errs.push('vehicle');
             if (r.downCollected === '' || r.downCollected === null || r.downCollected === undefined) errs.push('downCollected');
@@ -2586,6 +2876,23 @@
             const downAmt = parseFloat(r.downCollected) || 0;
             if (downAmt > 0 && !r.downMethod) errs.push('downMethod');
           }
+          // Approved but NOT closed → require the down they had on the visit day + a deal #
+          if (r.sale === false && (r.downAvailable === '' || r.downAvailable === null || r.downAvailable === undefined)) errs.push('downAvailable');
+          if (r.sale === false && !r.approvedDeal.trim()) errs.push('approvedDeal');
+        }
+        if (r.result === 'denied') {
+          if (!r.deniedReason) errs.push('deniedReason');
+          if (r.deniedReason === 'Otro' && !r.deniedReasonOther.trim()) errs.push('deniedReasonOther');
+          if (!r.deniedDeal.trim()) errs.push('deniedDeal');
+          if (r.sentAllBanks !== true) errs.push('sentAllBanks');
+          if (r.downAvailable === '' || r.downAvailable === null || r.downAvailable === undefined) errs.push('downAvailable');
+        }
+      }
+      if (r.applied === false) {
+        if (!r.noApplyReason) errs.push('noApplyReason');
+        if (r.noApplyReason === 'No tenía los requisitos') {
+          if (!r.noApplyRequirement) errs.push('noApplyRequirement');
+          if (r.noApplyRequirement === 'Otro' && !r.noApplyReqOther.trim()) errs.push('noApplyReqOther');
         }
       }
       return errs;
@@ -2610,6 +2917,32 @@
         }
       });
     }
+
+    // ============== VERSION GUARD (stale open tabs) ==============
+    // Managers keep the form tab open for days; a deploy then leaves them on an
+    // old version that lacks new mandatory fields. On load and whenever the tab
+    // regains focus, compare against the served version: reload if they haven't
+    // started typing, warn persistently if they have.
+    const FORM_VERSION = (document.querySelector('meta[name="form-version"]') || {}).content || 'dev';
+    async function checkFormVersion() {
+      try {
+        const res = await fetch(window.location.pathname + '?vchk=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const m = (await res.text()).match(/form-version" content="([^"]+)"/);
+        if (!m || m[1] === FORM_VERSION) return;
+        const started = typeof rows !== 'undefined' && Array.isArray(rows) && rows.some(r => isFilled(r));
+        if (!started) { window.location.reload(); return; }
+        if (!document.getElementById('version-banner')) {
+          const b = document.createElement('div');
+          b.id = 'version-banner';
+          b.style.cssText = 'position:sticky;top:0;z-index:999;background:#fef2f2;color:#991b1b;font-size:13px;font-weight:700;padding:10px 14px;text-align:center;border-bottom:1.5px solid #fecaca;';
+          b.textContent = '⚠️ Hay una versión nueva del formulario — envía este reporte y recarga la página.';
+          document.body.prepend(b);
+        }
+      } catch (e) {}
+    }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) checkFormVersion(); });
+    setTimeout(checkFormVersion, 2000);
 
     function submitForm() {
       if (rows.length === 0) {
@@ -2662,12 +2995,22 @@
           sale: r.sale,
           subgen: r.sale === true ? (r.scheduledBy === 'Self-gen') : null,  // derived from scheduled_by
           deal_number: r.dealNumber,
-          net_profit: parseFloat(r.netProfit) || null,
+          net_profit: r.netProfit !== '' ? parseFloat(r.netProfit) * (r.netProfitNegative ? -1 : 1) : null,
           lender: r.lender,
           vehicle: r.vehicle,
           down_collected: r.downCollected !== '' ? parseFloat(r.downCollected) : null,
           down_deferred: r.downDeferred !== '' ? parseFloat(r.downDeferred) : null,
-          down_method: r.downMethod || null
+          down_method: r.downMethod || null,
+          denied_deal: r.result === 'denied' ? (r.deniedDeal || null) : null,
+          sent_all_banks: r.result === 'denied' ? !!r.sentAllBanks : null,
+          down_available: (r.result === 'denied' || (r.result === 'approved' && r.sale === false))
+            ? (r.downAvailable !== '' ? parseFloat(r.downAvailable) : null) : null,
+          approved_deal: (r.result === 'approved' && r.sale === false) ? (r.approvedDeal || null) : null,
+          no_apply_reason: r.applied === false ? (r.noApplyReason || null) : null,
+          no_apply_requirement: (r.applied === false && r.noApplyReason === 'No tenía los requisitos') ? (r.noApplyRequirement || null) : null,
+          no_apply_requirement_other: (r.applied === false && r.noApplyReason === 'No tenía los requisitos' && r.noApplyRequirement === 'Otro') ? (r.noApplyReqOther || null) : null,
+          denied_reason: r.result === 'denied' ? (r.deniedReason || null) : null,
+          denied_reason_other: (r.result === 'denied' && r.deniedReason === 'Otro') ? (r.deniedReasonOther || null) : null
         }))
       };
 
@@ -2681,6 +3024,7 @@
       if (!pendingPayload) return;
       const btnConfirm = document.querySelector('.footer-confirm.btn-submit');
       if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Enviando...'; }
+      const wasFirstSend = !editMode; // Capture before saveReportToStorage may flip state
       try {
         const saved = await saveReportToStorage(pendingPayload);
         pendingPayload = saved;
@@ -2690,10 +3034,177 @@
         icon.style.animation = 'none';
         void icon.offsetWidth;
         icon.style.animation = '';
+        // Fire Discord notification only on FIRST submit of the day (not edits)
+        if (wasFirstSend) {
+          postDailyReportToDiscord(saved).catch(err => console.warn('Discord notify failed:', err));
+        }
       } catch (e) {
         showToast('Error al enviar: ' + e.message);
       } finally {
         if (btnConfirm) { btnConfirm.disabled = false; btnConfirm.textContent = 'Confirmar y enviar'; }
+      }
+    }
+
+    async function postDailyReportToDiscord(report) {
+      const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1507876233898229770/kEkI0jhN9bvKord4uFh-_Tk7woK8a3qGOA3MWhq-jQTKftKMU0fEsOH43R069Lf4izmB';
+      const DISCORD_USER_SAUL = '1242195465760542723';
+      const DISCORD_USER_CHARLES = '1468206071133900915';
+
+      const visits = report.visits || [];
+      const applied = visits.filter(v => v.applied === true).length;
+      const approved = visits.filter(v => v.result === 'approved').length;
+      const denied = visits.filter(v => v.result === 'denied').length;
+      const sales = visits.filter(v => v.sale === true);
+      const totalSales = sales.length;
+
+      // Color by sales count
+      let color = 15679044; // red
+      if (totalSales >= 4) color = 1102505;       // green
+      else if (totalSales >= 1) color = 16092171; // amber
+
+      // Visits by scheduled_by (new field) — count ALL visits not just sales
+      const byChannel = { 'Self-gen': 0, 'Call Center': 0, 'Walk-in': 0 };
+      let walkInNoInfo = 0;
+      visits.forEach(v => {
+        if (v.scheduled_by && byChannel[v.scheduled_by] !== undefined) {
+          byChannel[v.scheduled_by]++;
+          if (v.scheduled_by === 'Walk-in' && v.no_contact) walkInNoInfo++;
+        }
+      });
+      const channelLine = `Self-gen: **${byChannel['Self-gen']}**  ·  Call Center: **${byChannel['Call Center']}**  ·  Walk-in: **${byChannel['Walk-in']}**${walkInNoInfo > 0 ? ` (${walkInNoInfo} sin info)` : ''}`;
+
+      // Closers (with 0.5/0.5 split when 2 closers per Saúl's comp rule)
+      const closerShares = {};
+      sales.forEach(v => {
+        const c1 = v.closer && v.closer.trim() && v.closer.toLowerCase() !== 'n/a' ? v.closer.trim() : null;
+        const c2 = v.closer2 && v.closer2.trim() && v.closer2.toLowerCase() !== 'n/a' ? v.closer2.trim() : null;
+        if (c1 && c2) { closerShares[c1] = (closerShares[c1] || 0) + 0.5; closerShares[c2] = (closerShares[c2] || 0) + 0.5; }
+        else if (c1) closerShares[c1] = (closerShares[c1] || 0) + 1;
+        else if (c2) closerShares[c2] = (closerShares[c2] || 0) + 1;
+      });
+      const fmtShare = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+      const closersLine = Object.keys(closerShares).length
+        ? Object.entries(closerShares).sort((a,b) => b[1]-a[1]).map(([n, s]) => `• ${n} (${fmtShare(s)})`).join('\n')
+        : '—';
+
+      // Sales detail (max 10 to respect Discord limit)
+      const isEmpty = s => !s || !String(s).trim() || ['n/a','na','—','-'].includes(String(s).trim().toLowerCase());
+      const salesDetail = sales.slice(0, 10).map(v => {
+        const name = (v.name && v.name.trim()) ? v.name.trim() : (v.no_contact ? '— sin info —' : '—');
+        const vehicle = !isEmpty(v.vehicle) ? v.vehicle.trim() : '—';
+        const lender = !isEmpty(v.lender) ? v.lender.trim() : '—';
+        const c1 = !isEmpty(v.closer) ? v.closer.trim() : null;
+        const c2 = !isEmpty(v.closer2) ? v.closer2.trim() : null;
+        const setter = !isEmpty(v.setter) ? v.setter.trim() : null;
+        const isSelfGen = v.scheduled_by === 'Self-gen' || v.subgen === true;
+        const closerLabel = c1 && c2 ? `${c1} + ${c2}` : (c1 || c2 || '—');
+        const setterPart = setter ? ` · Setter ${setter}` : '';
+        const sgBadge = isSelfGen ? '  🌟 **SELF-GEN**' : '';
+        return `• ${name} — ${vehicle} — ${lender} — Closer ${closerLabel}${setterPart}${sgBadge}`;
+      }).join('\n');
+      const salesDetailLine = sales.length === 0 ? '_Sin ventas hoy_' : salesDetail + (sales.length > 10 ? `\n_…y ${sales.length - 10} más_` : '');
+
+      // Date label
+      const d = new Date(report.date + 'T00:00:00');
+      const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const monthsFull = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const dateNice = `${d.getDate()} ${months[d.getMonth()]}`;
+
+      // Month-to-date + pace + Δ vs previous month
+      let paceLine = '';
+      try {
+        const yy = d.getFullYear();
+        const mm = d.getMonth(); // 0-indexed
+        const monthStart = `${yy}-${String(mm+1).padStart(2,'0')}-01`;
+        const monthEnd = new Date(yy, mm+1, 0); // last day of current month
+        const monthEndISO = `${yy}-${String(mm+1).padStart(2,'0')}-${String(monthEnd.getDate()).padStart(2,'0')}`;
+        const daysInMonth = monthEnd.getDate();
+        const dayOfMonth = d.getDate();
+        // Previous month range
+        const prevMm = mm === 0 ? 11 : mm - 1;
+        const prevYy = mm === 0 ? yy - 1 : yy;
+        const prevStart = `${prevYy}-${String(prevMm+1).padStart(2,'0')}-01`;
+        const prevEnd = new Date(prevYy, prevMm+1, 0);
+        const prevEndISO = `${prevYy}-${String(prevMm+1).padStart(2,'0')}-${String(prevEnd.getDate()).padStart(2,'0')}`;
+
+        const res = await fetch(`${SUPA_URL}/rest/v1/ar_daily_reports?select=date,location,visits&date=gte.${prevStart}&date=lte.${monthEndISO}&location=eq.${encodeURIComponent(report.location)}`, { headers: SUPA_HEADERS });
+        if (res.ok) {
+          const rows = await res.json();
+          let mtd = 0, prev = 0;
+          rows.forEach(r => {
+            const isCur = r.date >= monthStart && r.date <= monthEndISO;
+            const isPrev = r.date >= prevStart && r.date <= prevEndISO;
+            const salesInDay = (r.visits || []).filter(v => v.sale === true).length;
+            if (isCur) mtd += salesInDay;
+            else if (isPrev) prev += salesInDay;
+          });
+          const pace = dayOfMonth > 0 ? Math.round(mtd / dayOfMonth * daysInMonth) : mtd;
+          const delta = pace - prev;
+          const arrow = delta > 0 ? '▲' : (delta < 0 ? '▼' : '●');
+          const sign = delta > 0 ? '+' : '';
+          const prevLabel = monthsFull[prevMm];
+          let deltaPart = '';
+          if (prev > 0) {
+            deltaPart = `  ·  ${arrow} **${sign}${delta}** vs ${prevLabel} (${prev})`;
+          } else {
+            deltaPart = `  ·  ${prevLabel} sin data`;
+          }
+          paceLine = `Llevamos **${mtd}** en ${dayOfMonth} día${dayOfMonth===1?'':'s'}  ·  pace **${pace}** al cierre${deltaPart}`;
+        }
+      } catch (e) {
+        console.warn('pace calc failed:', e);
+      }
+
+      const body = {
+        content: `<@${DISCORD_USER_SAUL}> <@${DISCORD_USER_CHARLES}>`,
+        allowed_mentions: { users: [DISCORD_USER_SAUL, DISCORD_USER_CHARLES] },
+        embeds: [{
+          title: `📊 ${report.location} — ${dateNice}`,
+          description: `Enviado por **${report.submitted_by || currentUser}**`,
+          color,
+          fields: [
+            {
+              name: 'Funnel del día',
+              value: `Visitas: **${visits.length}**  ·  Aplicaron: **${applied}**  ·  Aprobados: **${approved}**  ·  Negados: **${denied}**  ·  Ventas: **${totalSales}**`,
+              inline: false
+            },
+            {
+              name: 'Visitas por canal',
+              value: channelLine,
+              inline: false
+            },
+            {
+              name: 'Closers que cerraron',
+              value: closersLine,
+              inline: false
+            },
+            {
+              name: 'Detalle ventas',
+              value: salesDetailLine.slice(0, 1020),
+              inline: false
+            },
+            ...(paceLine ? [{
+              name: `📈 Mes (${monthsFull[d.getMonth()]}) — ${report.location}`,
+              value: paceLine,
+              inline: false
+            }] : [])
+          ],
+          footer: { text: 'AR Sales Reports' }
+        }]
+      };
+
+      // 8s timeout (best-effort, no blocking)
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 8000);
+      try {
+        await fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: ctrl.signal
+        });
+      } finally {
+        clearTimeout(tid);
       }
     }
 
@@ -2708,6 +3219,10 @@
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
       }[c]));
     }
+    function escapeAttr(s) {
+      if (s === null || s === undefined) return '';
+      return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
 
     function formatDateLong(iso) {
       const d = new Date(iso + 'T00:00:00');
@@ -2716,7 +3231,8 @@
     }
 
     function fmtMoney(n) {
-      return '$' + (n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+      const v = n || 0;
+      return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
     }
 
     function isNA(s) {
