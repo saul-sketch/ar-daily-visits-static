@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="form-version" content="2026-08-12-2">
+  <meta name="form-version" content="2026-09-02-cerrador-obligatorio">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <title>Auto Republic — Reporte Diario de Visitas</title>
@@ -2027,7 +2027,7 @@
               </select>
             </div>
             <div class="field">
-              <label class="field-label">Setter<span class="req">*</span><span class="opt">(N/A si no aplica)</span></label>
+              <label class="field-label">Setter<span class="req">*</span><span class="opt setter-na-hint">(N/A si no aplica)</span></label>
               <select class="field-select agent-select" data-field="setter" data-role="setter"
                 onchange="onAgentSelectChange(${index}, 'setter', this)">
               </select>
@@ -2353,11 +2353,25 @@
 
     // ============== AGENT DROPDOWNS (closer / setter) ==============
 
+    // Una visita SIEMPRE la atendió alguien, y una cita del call center SIEMPRE la
+    // agendó alguien. En esos dos casos "N/A" no es una respuesta posible, así que ni
+    // siquiera se ofrece: hasta agosto se colaba y esas visitas terminaban sin dueño
+    // (24 visitas y 19 citas quedaron sin acreditar a nadie).
+    function permiteNA(selectEl, role) {
+      const field = selectEl.dataset.field;
+      if (field === 'closer') return false;             // el que atendió: obligatorio
+      if (field === 'closer2') return true;             // el segundo: casi siempre no hay
+      const card = selectEl.closest('.visit-card');
+      const idx = card ? parseInt(card.dataset.index) : -1;
+      const r = idx >= 0 ? rows[idx] : null;
+      return !r || r.scheduledBy !== 'Call Center';     // el que agendó: solo si no vino del call center
+    }
+
     function populateAgentSelect(selectEl, role, currentValue) {
       const list = role === 'closer' ? listClosers() : listSetters();
       const optionsHtml = [
         '<option value="">Seleccionar...</option>',
-        '<option value="N/A">N/A</option>',
+        ...(permiteNA(selectEl, role) ? ['<option value="N/A">N/A</option>'] : []),
         ...list.map(a => `<option value="${escapeAttr(a.name)}">${escapeHtml(a.name)}</option>`),
         '<option value="__add__" style="font-weight:600; color:#10b981;">🔍 Buscar en el CRM...</option>'
       ];
@@ -2513,6 +2527,13 @@
       }
       activateRow(index);
       clearToggleInvalid(index, 'scheduledBy');
+      // Al pasar a "Call Center" el N/A del setter deja de ser válido: si estaba puesto se
+      // borra, para que quede pidiendo el nombre en vez de guardarse una cita sin dueño.
+      const selSet = document.querySelector(`.visit-card[data-index="${index}"] [data-field="setter"]`);
+      if (selSet) {
+        if (r.scheduledBy === 'Call Center' && (r.setter || '').trim().toUpperCase() === 'N/A') r.setter = '';
+        populateAgentSelect(selSet, 'setter', r.setter || '');
+      }
       renderToggles(index);
       checkProgress(index);
       updateStats();
@@ -2662,6 +2683,8 @@
         sbb[0].className = 'toggle-btn' + (r.scheduledBy === 'Self-gen'   ? ' active-yes' : '');
         sbb[1].className = 'toggle-btn' + (r.scheduledBy === 'Call Center' ? ' active-yes' : '');
         sbb[2].className = 'toggle-btn' + (r.scheduledBy === 'Walk-in'    ? ' active-yes' : '');
+        const hint = card.querySelector('.setter-na-hint');
+        if (hint) hint.style.display = r.scheduledBy === 'Call Center' ? 'none' : '';
       }
 
       // hasContact (Sí, tengo / No tengo) — only when Walk-in
@@ -2856,8 +2879,10 @@
       }
 
       if (!r.source) errs.push('source');
-      if (!r.setter.trim()) errs.push('setter');
-      if (!r.closer.trim()) errs.push('closer');
+      const esNA = v => !v.trim() || v.trim().toUpperCase() === 'N/A';
+      // Si la cita vino del call center, alguien la agendó: N/A no vale.
+      if (r.scheduledBy === 'Call Center' ? esNA(r.setter) : !r.setter.trim()) errs.push('setter');
+      if (esNA(r.closer)) errs.push('closer');
       if (!r.closer2.trim()) errs.push('closer2');
       if (r.applied === null) errs.push('applied');
 

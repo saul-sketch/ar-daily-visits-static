@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Republic — Dashboard de KPIs</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --primary: #1a1a2e;
+      --accent: #e94560;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --orange: #f97316;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--gray-900);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: white;
+      border-radius: 16px;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .header .subtitle { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+
+    /* Filters bar */
+    .filters {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-500);
+      margin-right: 4px;
+    }
+
+    .filter-tabs {
+      display: inline-flex;
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 3px;
+    }
+
+    .filter-tab {
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--gray-500);
+      transition: all 0.15s;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .filter-tab.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    /* KPI cards grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-500);
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .kpi-value.money { font-size: 24px; }
+
+    .kpi-trend {
+      font-size: 11px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kpi-trend.up { color: var(--green); }
+    .kpi-trend.down { color: var(--red); }
+    .kpi-trend.neutral { color: var(--gray-500); }
+
+    .kpi-card.accent-blue .kpi-value { color: var(--blue); }
+    .kpi-card.accent-yellow .kpi-value { color: var(--yellow); }
+    .kpi-card.accent-green .kpi-value { color: var(--green); }
+    .kpi-card.accent-red .kpi-value { color: var(--red); }
+    .kpi-card.accent-accent .kpi-value { color: var(--accent); }
+    .kpi-card.accent-purple .kpi-value { color: var(--purple); }
+
+    /* Two-column layout */
+    .row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* Section card */
+    .section-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .section-card .section-sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: 18px;
+    }
+
+    /* Conversion funnel */
+    .funnel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .funnel-step {
+      display: grid;
+      grid-template-columns: 130px 1fr 90px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .funnel-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .funnel-bar-wrap {
+      height: 32px;
+      background: var(--gray-100);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .funnel-bar {
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+      transition: width 0.5s ease;
+    }
+
+    .funnel-step:nth-child(1) .funnel-bar { background: var(--blue); }
+    .funnel-step:nth-child(2) .funnel-bar { background: var(--yellow); }
+    .funnel-step:nth-child(3) .funnel-bar { background: var(--green); }
+    .funnel-step:nth-child(4) .funnel-bar { background: var(--accent); }
+
+    .funnel-rate {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-500);
+      text-align: right;
+    }
+
+    /* Conversion rates grid */
+    .rates-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .rate-card {
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .rate-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      margin-bottom: 6px;
+    }
+
+    .rate-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.5px;
+    }
+
+    .rate-detail {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 3px;
+    }
+
+    /* Daily breakdown table */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-500);
+      border-bottom: 2px solid var(--gray-200);
+      background: var(--gray-100);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-900);
+    }
+
+    tr:hover td {
+      background: #fafbfc;
+    }
+
+    .td-loc {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .td-loc .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .td-loc .dot.orlando { background: var(--blue); }
+    .td-loc .dot.kissimmee { background: var(--yellow); }
+
+    .td-numeric { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .td-money { font-weight: 700; color: var(--green); text-align: right; font-variant-numeric: tabular-nums; }
+    .td-zero { color: var(--gray-300); }
+
+    /* Status pills */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pill.submitted { background: #d1fae5; color: #065f46; }
+    .status-pill.missing { background: #fee2e2; color: #991b1b; }
+
+    /* Top performers */
+    .performer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .performer:last-child { border-bottom: none; }
+
+    .performer-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--gray-900);
+    }
+
+    .performer-detail {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .performer-stat {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .performer-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-500);
+      margin-right: 12px;
+    }
+
+    .performer-rank.top1 { background: #fef3c7; color: #92400e; }
+    .performer-rank.top2 { background: #e0e7ff; color: #3730a3; }
+    .performer-rank.top3 { background: #fce7f3; color: #9f1239; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray-400);
+      font-size: 13px;
+    }
+
+    /* Clickable KPI cards */
+    .kpi-card.clickable {
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .kpi-card.clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .kpi-card .kpi-arrow {
+      margin-left: auto;
+      color: var(--gray-300);
+      font-size: 14px;
+    }
+    .kpi-label-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    /* Demo bar */
+    .demo-bar {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #78350f;
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .demo-bar button {
+      padding: 6px 14px;
+      border: 1px solid #d97706;
+      background: #fbbf24;
+      color: #78350f;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .demo-bar button:hover { background: #f59e0b; color: white; }
+    .demo-bar button.danger {
+      background: white;
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .demo-bar button.danger:hover { background: var(--red); color: white; }
+
+    /* Drawer */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .drawer-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .drawer {
+      width: 100%;
+      max-width: 760px;
+      height: 100vh;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+    }
+    .drawer-overlay.show .drawer {
+      transform: translateX(0);
+    }
+    .drawer-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      background: white;
+    }
+    .drawer-header h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.3px;
+    }
+    .drawer-header .drawer-sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+    .drawer-close {
+      background: var(--gray-100);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .drawer-close:hover { background: var(--gray-200); }
+
+    .drawer-filters {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--gray-100);
+    }
+    .drawer-chip {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      background: white;
+      color: var(--gray-700);
+      border: 1px solid var(--gray-200);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .drawer-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .drawer-chip-count {
+      margin-left: 4px;
+      opacity: 0.7;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+      background: var(--gray-100);
+    }
+
+    /* Visit mini card */
+    .visit-mini {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .visit-mini:hover {
+      border-color: var(--gray-300);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .visit-mini.expanded {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .visit-mini-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .visit-mini-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--gray-900);
+    }
+    .visit-mini-meta {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+    .visit-mini-right {
+      margin-left: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .visit-mini-amount {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    .outcome-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .outcome-pill.visit { background: #dbeafe; color: #1e40af; }
+    .outcome-pill.applied { background: #fef3c7; color: #92400e; }
+    .outcome-pill.approved { background: #d1fae5; color: #065f46; }
+    .outcome-pill.denied { background: #fee2e2; color: #991b1b; }
+    .outcome-pill.sold { background: #ddd6fe; color: #5b21b6; }
+
+    .visit-mini-detail {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--gray-200);
+    }
+    .visit-mini.expanded .visit-mini-detail { display: block; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 18px;
+    }
+    .detail-grid.full {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .detail-row {
+      font-size: 12px;
+    }
+    .detail-row .lbl {
+      color: var(--gray-500);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+    .detail-row .val {
+      color: var(--gray-900);
+      font-weight: 600;
+    }
+    .detail-row .val.money { color: var(--green); }
+    .detail-row .val.muted { color: var(--gray-400); }
+
+    .visit-mini-loc {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+    }
+    .visit-mini-loc .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .visit-mini-loc .dot.orlando { background: var(--blue); }
+    .visit-mini-loc .dot.kissimmee { background: var(--yellow); }
+
+    /* Expandable table row */
+    tr.expandable { cursor: pointer; }
+    tr.expandable:hover td { background: #fafbfc; }
+    tr.expand-row td {
+      padding: 0;
+      background: var(--gray-100);
+    }
+    .expand-content {
+      padding: 16px 20px;
+      background: var(--gray-100);
+    }
+
+    /* Performer clickable */
+    .performer { cursor: pointer; transition: background 0.15s; padding-left: 4px; padding-right: 4px; border-radius: 8px; }
+    .performer:hover { background: var(--gray-100); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .row-2col { grid-template-columns: 1fr; }
+      .detail-grid.full { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .funnel-step { grid-template-columns: 1fr; gap: 4px; }
+      .funnel-name, .funnel-rate { text-align: left; }
+      .detail-grid, .detail-grid.full { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Auto Republic — Dashboard de KPIs</h1>
+        <div class="subtitle"><strong style="color: #fbbf24;">DRAFT</strong> · Datos en vivo de los reportes diarios enviados</div>
+      </div>
+      <div style="font-size: 12px; opacity: 0.7;" id="last-updated">—</div>
+    </div>
+
+    <!-- Demo data bar -->
+    <div class="demo-bar">
+      <span style="font-size:16px;">⚙️</span>
+      <span><strong>Demo:</strong> carga 3 semanas de reportes ficticios para ambas locaciones para probar el dashboard.</span>
+      <button onclick="seedDemoData()">Cargar data demo</button>
+      <button class="danger" onclick="clearAllData()">Borrar todo</button>
+      <span id="data-count" style="margin-left:auto; font-size:12px; opacity:0.7;">—</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">Locación</span>
+        <div class="filter-tabs" id="location-filter">
+          <button class="filter-tab active" data-location="all">Ambas</button>
+          <button class="filter-tab" data-location="orlando">Orlando</button>
+          <button class="filter-tab" data-location="kissimmee">Kissimmee</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Periodo</span>
+        <div class="filter-tabs" id="period-filter">
+          <button class="filter-tab" data-period="today">Hoy</button>
+          <button class="filter-tab active" data-period="week">Esta semana</button>
+          <button class="filter-tab" data-period="month">Este mes</button>
+          <button class="filter-tab" data-period="all">Todo</button>
+        </div>
+      </div>
+      <div style="margin-left: auto;">
+        <button class="filter-tab" onclick="loadData()" style="background: var(--primary); color: white;">↻ Refrescar</button>
+      </div>
+    </div>
+
+    <!-- KPI Cards (clickable to drill in) -->
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card accent-blue clickable" onclick="openDrawer('all')">
+        <div class="kpi-label-row"><span class="kpi-label">Visitas</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value" id="kpi-visits">0</div>
+        <div class="kpi-trend neutral" id="kpi-visits-detail">— en el periodo</div>
+      </div>
+      <div class="kpi-card accent-yellow clickable" onclick="openDrawer('applied')">
+        <div class="kpi-label-row"><span class="kpi-label">Aplicaron</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value" id="kpi-applied">0</div>
+        <div class="kpi-trend neutral" id="kpi-applied-detail">—</div>
+      </div>
+      <div class="kpi-card accent-green clickable" onclick="openDrawer('approved')">
+        <div class="kpi-label-row"><span class="kpi-label">Aprobados</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value" id="kpi-approved">0</div>
+        <div class="kpi-trend neutral" id="kpi-approved-detail">—</div>
+      </div>
+      <div class="kpi-card accent-accent clickable" onclick="openDrawer('sold')">
+        <div class="kpi-label-row"><span class="kpi-label">Ventas</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value" id="kpi-sales">0</div>
+        <div class="kpi-trend neutral" id="kpi-sales-detail">—</div>
+      </div>
+      <div class="kpi-card accent-purple clickable" onclick="openDrawer('sold')">
+        <div class="kpi-label-row"><span class="kpi-label">Net Profit</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value money" id="kpi-revenue">$0</div>
+        <div class="kpi-trend neutral" id="kpi-revenue-detail">—</div>
+      </div>
+      <div class="kpi-card clickable" onclick="openDrawer('sold')">
+        <div class="kpi-label-row"><span class="kpi-label">Down Collected</span><span class="kpi-arrow">›</span></div>
+        <div class="kpi-value money" id="kpi-down">$0</div>
+        <div class="kpi-trend neutral" id="kpi-down-detail">—</div>
+      </div>
+    </div>
+
+    <!-- Funnel + Rates -->
+    <div class="row-2col">
+      <div class="section-card">
+        <h3>Embudo de Conversión</h3>
+        <p class="section-sub">De visita hasta venta cerrada</p>
+        <div class="funnel" id="funnel">
+          <div class="funnel-step">
+            <div class="funnel-name">Visitas</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" id="funnel-visits" style="width: 100%;">0</div></div>
+            <div class="funnel-rate">100%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-name">Aplicaron</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" id="funnel-applied" style="width: 0%;">0</div></div>
+            <div class="funnel-rate" id="funnel-applied-rate">0%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-name">Aprobados</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" id="funnel-approved" style="width: 0%;">0</div></div>
+            <div class="funnel-rate" id="funnel-approved-rate">0%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-name">Ventas</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" id="funnel-sales" style="width: 0%;">0</div></div>
+            <div class="funnel-rate" id="funnel-sales-rate">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Tasas de Conversión Clave</h3>
+        <p class="section-sub">Porcentajes que importan</p>
+        <div class="rates-grid">
+          <div class="rate-card">
+            <div class="rate-label">Visit → Apply</div>
+            <div class="rate-value" id="rate-visit-apply">0%</div>
+            <div class="rate-detail" id="rate-visit-apply-detail">— de — visitas</div>
+          </div>
+          <div class="rate-card">
+            <div class="rate-label">Apply → Approve</div>
+            <div class="rate-value" id="rate-apply-approve">0%</div>
+            <div class="rate-detail" id="rate-apply-approve-detail">— de — aplicaron</div>
+          </div>
+          <div class="rate-card">
+            <div class="rate-label">Approve → Sale</div>
+            <div class="rate-value" id="rate-approve-sale">0%</div>
+            <div class="rate-detail" id="rate-approve-sale-detail">— de — aprobados</div>
+          </div>
+          <div class="rate-card">
+            <div class="rate-label">Visit → Sale</div>
+            <div class="rate-value" id="rate-visit-sale">0%</div>
+            <div class="rate-detail" id="rate-visit-sale-detail">— de — visitas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily breakdown -->
+    <div class="section-card" style="margin-bottom:16px;">
+      <h3>Desglose Diario</h3>
+      <p class="section-sub">Cada día del periodo seleccionado</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Loc</th>
+              <th class="td-numeric">Visitas</th>
+              <th class="td-numeric">Aplicaron</th>
+              <th class="td-numeric">Aprob</th>
+              <th class="td-numeric">Negados</th>
+              <th class="td-numeric">Ventas</th>
+              <th class="td-numeric">Net Profit</th>
+              <th class="td-numeric">Down Col.</th>
+              <th>V→S</th>
+              <th>Por</th>
+            </tr>
+          </thead>
+          <tbody id="daily-tbody">
+            <tr><td colspan="11" class="empty-state">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top closers + Top setters -->
+    <div class="row-2col">
+      <div class="section-card">
+        <h3>Top Closers</h3>
+        <p class="section-sub">Por número de ventas en el periodo</p>
+        <div id="top-closers">
+          <div class="empty-state">—</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <h3>Top Setters</h3>
+        <p class="section-sub">Por número de visitas que aterrizaron en venta</p>
+        <div id="top-setters">
+          <div class="empty-state">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drilldown Drawer -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer(event)">
+    <div class="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div>
+          <h2 id="drawer-title">Visitas</h2>
+          <div class="drawer-sub" id="drawer-sub">—</div>
+        </div>
+        <button class="drawer-close" onclick="closeDrawer()">&times;</button>
+      </div>
+      <div class="drawer-filters" id="drawer-filters"></div>
+      <div class="drawer-body" id="drawer-body"></div>
+    </div>
+  </div>
+
+  <script>
+    // Filter state
+    let filterLocation = 'all';
+    let filterPeriod = 'week';
+
+    // Drawer state
+    let drawerVisits = [];
+    let drawerFilter = 'all';
+    let drawerCustomTitle = null;
+    let expandedVisitKey = null;
+
+    // Bind filter tabs
+    document.querySelectorAll('#location-filter .filter-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#location-filter .filter-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterLocation = btn.dataset.location;
+        loadData();
+      });
+    });
+
+    document.querySelectorAll('#period-filter .filter-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#period-filter .filter-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterPeriod = btn.dataset.period;
+        loadData();
+      });
+    });
+
+    function loadAllReports() {
+      const reports = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('ar_report_')) {
+          try {
+            const r = JSON.parse(localStorage.getItem(key));
+            if (r && r.visits) reports.push(r);
+          } catch (e) {}
+        }
+      }
+      return reports;
+    }
+
+    function inPeriod(dateISO, period) {
+      const d = new Date(dateISO + 'T00:00:00');
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      if (period === 'today') {
+        return d.toDateString() === today.toDateString();
+      }
+      if (period === 'week') {
+        const start = new Date(today);
+        start.setDate(today.getDate() - today.getDay());
+        return d >= start && d <= today;
+      }
+      if (period === 'month') {
+        return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+      }
+      return true;
+    }
+
+    function fmtMoney(n) {
+      return '$' + (n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
+
+    function fmtPct(num, denom) {
+      if (!denom) return '0%';
+      return ((num / denom) * 100).toFixed(1) + '%';
+    }
+
+    function formatDateShort(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+      const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
+    function loadData() {
+      const all = loadAllReports();
+      const filtered = all.filter(r => {
+        const matchLoc = filterLocation === 'all' ? true : (r.location || '').toLowerCase() === filterLocation;
+        const matchPeriod = inPeriod(r.date, filterPeriod);
+        return matchLoc && matchPeriod;
+      });
+
+      // Aggregate
+      let visits = 0, applied = 0, approved = 0, denied = 0, sales = 0, netProfit = 0, downCol = 0;
+      const closersMap = {};
+      const settersMap = {};
+
+      filtered.forEach(r => {
+        r.visits.forEach(v => {
+          visits++;
+          if (v.applied === true) applied++;
+          if (v.result === 'approved') approved++;
+          if (v.result === 'denied') denied++;
+          if (v.sale === true) {
+            sales++;
+            netProfit += v.net_profit || 0;
+            downCol += v.down_collected || 0;
+            if (v.closer && v.closer.trim() && v.closer.toLowerCase() !== 'n/a') {
+              closersMap[v.closer] = (closersMap[v.closer] || 0) + 1;
+            }
+            if (v.closer2 && v.closer2.trim() && v.closer2.toLowerCase() !== 'n/a') {
+              closersMap[v.closer2] = (closersMap[v.closer2] || 0) + 1;
+            }
+            if (v.setter && v.setter.trim() && v.setter.toLowerCase() !== 'n/a') {
+              settersMap[v.setter] = (settersMap[v.setter] || 0) + 1;
+            }
+          }
+        });
+      });
+
+      // KPIs
+      document.getElementById('kpi-visits').textContent = visits;
+      document.getElementById('kpi-visits-detail').textContent = `${filtered.length} reporte${filtered.length !== 1 ? 's' : ''}`;
+      document.getElementById('kpi-applied').textContent = applied;
+      document.getElementById('kpi-applied-detail').textContent = `${fmtPct(applied, visits)} de las visitas`;
+      document.getElementById('kpi-approved').textContent = approved;
+      document.getElementById('kpi-approved-detail').textContent = `${fmtPct(approved, applied)} de los que aplicaron`;
+      document.getElementById('kpi-sales').textContent = sales;
+      document.getElementById('kpi-sales-detail').textContent = `${fmtPct(sales, approved)} de los aprobados`;
+      document.getElementById('kpi-revenue').textContent = fmtMoney(netProfit);
+      document.getElementById('kpi-revenue-detail').textContent = sales ? `${fmtMoney(netProfit / sales)} promedio` : '—';
+      document.getElementById('kpi-down').textContent = fmtMoney(downCol);
+      document.getElementById('kpi-down-detail').textContent = sales ? `${fmtMoney(downCol / sales)} promedio` : '—';
+
+      // Funnel
+      const max = Math.max(visits, 1);
+      document.getElementById('funnel-visits').textContent = visits;
+      document.getElementById('funnel-applied').textContent = applied;
+      document.getElementById('funnel-applied').style.width = (applied / max * 100) + '%';
+      document.getElementById('funnel-applied-rate').textContent = fmtPct(applied, visits);
+      document.getElementById('funnel-approved').textContent = approved;
+      document.getElementById('funnel-approved').style.width = (approved / max * 100) + '%';
+      document.getElementById('funnel-approved-rate').textContent = fmtPct(approved, visits);
+      document.getElementById('funnel-sales').textContent = sales;
+      document.getElementById('funnel-sales').style.width = (sales / max * 100) + '%';
+      document.getElementById('funnel-sales-rate').textContent = fmtPct(sales, visits);
+
+      // Rates
+      document.getElementById('rate-visit-apply').textContent = fmtPct(applied, visits);
+      document.getElementById('rate-visit-apply-detail').textContent = `${applied} de ${visits} visitas`;
+      document.getElementById('rate-apply-approve').textContent = fmtPct(approved, applied);
+      document.getElementById('rate-apply-approve-detail').textContent = `${approved} de ${applied} aplicaron`;
+      document.getElementById('rate-approve-sale').textContent = fmtPct(sales, approved);
+      document.getElementById('rate-approve-sale-detail').textContent = `${sales} de ${approved} aprobados`;
+      document.getElementById('rate-visit-sale').textContent = fmtPct(sales, visits);
+      document.getElementById('rate-visit-sale-detail').textContent = `${sales} de ${visits} visitas`;
+
+      // Daily table — group by date+location
+      const tbody = document.getElementById('daily-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="empty-state">No hay reportes en el periodo seleccionado</td></tr>';
+      } else {
+        const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+        tbody.innerHTML = sorted.map(r => {
+          let v = 0, ap = 0, apr = 0, dn = 0, sl = 0, np = 0, dc = 0;
+          r.visits.forEach(x => {
+            v++;
+            if (x.applied === true) ap++;
+            if (x.result === 'approved') apr++;
+            if (x.result === 'denied') dn++;
+            if (x.sale === true) { sl++; np += x.net_profit || 0; dc += x.down_collected || 0; }
+          });
+          const loc = (r.location || '—').toLowerCase();
+          return `
+            <tr data-date="${r.date}" data-location="${r.location || ''}">
+              <td>${formatDateShort(r.date)}</td>
+              <td><span class="td-loc"><span class="dot ${loc}"></span>${r.location || '—'}</span></td>
+              <td class="td-numeric">${v}</td>
+              <td class="td-numeric ${ap === 0 ? 'td-zero' : ''}">${ap}</td>
+              <td class="td-numeric ${apr === 0 ? 'td-zero' : ''}">${apr}</td>
+              <td class="td-numeric ${dn === 0 ? 'td-zero' : ''}">${dn}</td>
+              <td class="td-numeric ${sl === 0 ? 'td-zero' : ''}">${sl}</td>
+              <td class="td-money ${np === 0 ? 'td-zero' : ''}">${fmtMoney(np)}</td>
+              <td class="td-money ${dc === 0 ? 'td-zero' : ''}">${fmtMoney(dc)}</td>
+              <td class="td-numeric">${fmtPct(sl, v)}</td>
+              <td style="font-size:12px; color: var(--gray-500);">${r.submitted_by || '—'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Top closers
+      const closersList = Object.entries(closersMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+      const closersEl = document.getElementById('top-closers');
+      if (closersList.length === 0) {
+        closersEl.innerHTML = '<div class="empty-state">No hay ventas en el periodo</div>';
+      } else {
+        closersEl.innerHTML = closersList.map(([name, count], i) => `
+          <div class="performer" data-name="${name}">
+            <div style="display:flex; align-items:center;">
+              <div class="performer-rank ${i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : ''}">${i + 1}</div>
+              <div>
+                <div class="performer-name">${name}</div>
+                <div class="performer-detail">${count} venta${count > 1 ? 's' : ''}</div>
+              </div>
+            </div>
+            <div class="performer-stat">${count}</div>
+          </div>
+        `).join('');
+      }
+
+      // Top setters
+      const settersList = Object.entries(settersMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+      const settersEl = document.getElementById('top-setters');
+      if (settersList.length === 0) {
+        settersEl.innerHTML = '<div class="empty-state">No hay ventas en el periodo</div>';
+      } else {
+        settersEl.innerHTML = settersList.map(([name, count], i) => `
+          <div class="performer" data-name="${name}">
+            <div style="display:flex; align-items:center;">
+              <div class="performer-rank ${i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : ''}">${i + 1}</div>
+              <div>
+                <div class="performer-name">${name}</div>
+                <div class="performer-detail">${count} venta${count > 1 ? 's' : ''} con su lead</div>
+              </div>
+            </div>
+            <div class="performer-stat">${count}</div>
+          </div>
+        `).join('');
+      }
+
+      // Last updated
+      document.getElementById('last-updated').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-US', {hour: 'numeric', minute: '2-digit'});
+    }
+
+    // ============== DRILLDOWN DRAWER ==============
+
+    function getFilteredReports() {
+      return loadAllReports().filter(r => {
+        const matchLoc = filterLocation === 'all' ? true : (r.location || '').toLowerCase() === filterLocation;
+        const matchPeriod = inPeriod(r.date, filterPeriod);
+        return matchLoc && matchPeriod;
+      });
+    }
+
+    function getAllVisitsFlat() {
+      return getFilteredReports().flatMap(r =>
+        r.visits.map((v, i) => ({
+          ...v,
+          _date: r.date,
+          _location: r.location || '—',
+          _submitted_by: r.submitted_by || '—',
+          _idx: i
+        }))
+      );
+    }
+
+    function outcomeOf(v) {
+      if (v.sale === true) return 'sold';
+      if (v.result === 'approved') return 'approved';
+      if (v.result === 'denied') return 'denied';
+      if (v.applied === true) return 'applied';
+      return 'visit';
+    }
+
+    function applyDrawerFilter(visits, f) {
+      if (f === 'all') return visits;
+      return visits.filter(v => outcomeOf(v) === f);
+    }
+
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function isNA(s) {
+      if (!s) return true;
+      const t = String(s).trim().toLowerCase();
+      return t === '' || t === 'n/a' || t === 'na';
+    }
+
+    function visitKey(v) {
+      return `${v._date}_${(v._location || '').toLowerCase()}_${v._idx}`;
+    }
+
+    function openDrawer(initialFilter, customVisits, customTitle) {
+      drawerVisits = customVisits || getAllVisitsFlat();
+      drawerFilter = initialFilter || 'all';
+      drawerCustomTitle = customTitle || null;
+      expandedVisitKey = null;
+      renderDrawer();
+      document.getElementById('drawer-overlay').classList.add('show');
+    }
+
+    function closeDrawer(e) {
+      if (e && e.target.id !== 'drawer-overlay') return;
+      document.getElementById('drawer-overlay').classList.remove('show');
+    }
+
+    function setDrawerFilter(f) {
+      drawerFilter = f;
+      expandedVisitKey = null;
+      renderDrawer();
+    }
+
+    function toggleVisitExpand(key) {
+      expandedVisitKey = expandedVisitKey === key ? null : key;
+      renderDrawer();
+    }
+
+    function renderDrawer() {
+      // Counts for chips
+      const counts = {
+        all: drawerVisits.length,
+        applied: drawerVisits.filter(v => v.applied === true).length,
+        approved: drawerVisits.filter(v => v.result === 'approved').length,
+        denied: drawerVisits.filter(v => v.result === 'denied').length,
+        sold: drawerVisits.filter(v => v.sale === true).length
+      };
+
+      // Title + sub
+      const titles = {all:'Visitas', applied:'Aplicaron', approved:'Aprobados', denied:'Negados', sold:'Ventas'};
+      document.getElementById('drawer-title').textContent = drawerCustomTitle || titles[drawerFilter] || 'Visitas';
+      const periodLabels = {today:'Hoy', week:'Esta semana', month:'Este mes', all:'Todo el tiempo'};
+      const locLabel = filterLocation === 'all' ? 'Ambas locaciones' : filterLocation === 'orlando' ? 'Orlando' : 'Kissimmee';
+      document.getElementById('drawer-sub').textContent = `${periodLabels[filterPeriod]} · ${locLabel}`;
+
+      // Filter chips
+      const chips = ['all','applied','approved','denied','sold'].map(f => `
+        <button class="drawer-chip ${drawerFilter === f ? 'active' : ''}" onclick="setDrawerFilter('${f}')">
+          ${titles[f]}<span class="drawer-chip-count">${counts[f]}</span>
+        </button>
+      `).join('');
+      document.getElementById('drawer-filters').innerHTML = chips;
+
+      // List
+      let filtered = applyDrawerFilter(drawerVisits, drawerFilter);
+      // Sort: sales by amount desc, others by date desc
+      if (drawerFilter === 'sold') {
+        filtered = [...filtered].sort((a, b) => (b.net_profit || 0) - (a.net_profit || 0));
+      } else {
+        filtered = [...filtered].sort((a, b) => b._date.localeCompare(a._date));
+      }
+
+      const body = document.getElementById('drawer-body');
+      if (filtered.length === 0) {
+        body.innerHTML = '<div class="empty-state" style="padding:40px;">No hay registros en este filtro</div>';
+        return;
+      }
+
+      body.innerHTML = filtered.map(v => renderVisitMini(v)).join('');
+    }
+
+    function renderVisitMini(v) {
+      const outcome = outcomeOf(v);
+      const outcomeLabels = {visit:'Solo visita', applied:'Aplicó', approved:'Aprobado', denied:'Negado', sold:'Vendido'};
+      const key = visitKey(v);
+      const expanded = expandedVisitKey === key;
+      const loc = (v._location || '').toLowerCase();
+      const dateShort = formatDateShort(v._date);
+
+      const closerTxt = isNA(v.closer2) ? escapeHtml(v.closer || '—') : `${escapeHtml(v.closer)} & ${escapeHtml(v.closer2)}`;
+      const setterTxt = isNA(v.setter) ? '—' : escapeHtml(v.setter);
+
+      const detail = `
+        <div class="visit-mini-detail">
+          <div class="detail-grid full">
+            <div class="detail-row">
+              <div class="lbl">Teléfono</div>
+              <div class="val">${escapeHtml(v.phone || '—')}</div>
+            </div>
+            <div class="detail-row">
+              <div class="lbl">Source</div>
+              <div class="val">${escapeHtml(v.source || '—')}</div>
+            </div>
+            <div class="detail-row">
+              <div class="lbl">Reportado por</div>
+              <div class="val">${escapeHtml(v._submitted_by)}</div>
+            </div>
+            <div class="detail-row">
+              <div class="lbl">Setter</div>
+              <div class="val ${isNA(v.setter) ? 'muted' : ''}">${setterTxt}</div>
+            </div>
+            <div class="detail-row">
+              <div class="lbl">Closer</div>
+              <div class="val">${closerTxt}</div>
+            </div>
+            <div class="detail-row">
+              <div class="lbl">Aplicó</div>
+              <div class="val ${v.applied === null ? 'muted' : ''}">${v.applied === true ? 'Sí' : v.applied === false ? 'No' : '—'}</div>
+            </div>
+          </div>
+          ${v.sale === true ? `
+            <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--gray-200);">
+              <div class="lbl" style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--green); margin-bottom:8px;">Detalles de la venta</div>
+              <div class="detail-grid full">
+                <div class="detail-row">
+                  <div class="lbl">Deal #</div>
+                  <div class="val">${escapeHtml(v.deal_number || '—')}</div>
+                </div>
+                <div class="detail-row">
+                  <div class="lbl">Vehículo</div>
+                  <div class="val">${escapeHtml(v.vehicle || '—')}</div>
+                </div>
+                <div class="detail-row">
+                  <div class="lbl">Lender</div>
+                  <div class="val">${escapeHtml(v.lender || '—')}</div>
+                </div>
+                <div class="detail-row">
+                  <div class="lbl">Net Profit</div>
+                  <div class="val money">${fmtMoney(v.net_profit)}</div>
+                </div>
+                <div class="detail-row">
+                  <div class="lbl">Down Colectado</div>
+                  <div class="val money">${fmtMoney(v.down_collected)}</div>
+                </div>
+                <div class="detail-row">
+                  <div class="lbl">Down Diferido</div>
+                  <div class="val ${v.down_deferred ? 'money' : 'muted'}">${fmtMoney(v.down_deferred)}</div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      const rightSide = v.sale === true
+        ? `<span class="visit-mini-amount">${fmtMoney(v.net_profit)}</span><span class="outcome-pill ${outcome}">${outcomeLabels[outcome]}</span>`
+        : `<span class="outcome-pill ${outcome}">${outcomeLabels[outcome]}</span>`;
+
+      return `
+        <div class="visit-mini ${expanded ? 'expanded' : ''}" onclick="toggleVisitExpand('${key}')">
+          <div class="visit-mini-header">
+            <div style="flex:1; min-width:0;">
+              <div class="visit-mini-name">${escapeHtml(v.name || '—')}</div>
+              <div class="visit-mini-meta">
+                <span class="visit-mini-loc"><span class="dot ${loc}"></span>${escapeHtml(v._location)}</span>
+                · ${dateShort} · ${escapeHtml(v.source || '—')} · Closer ${escapeHtml(v.closer || '—')}
+              </div>
+            </div>
+            <div class="visit-mini-right">${rightSide}</div>
+          </div>
+          ${detail}
+        </div>
+      `;
+    }
+
+    // Click on closer/setter → open drawer with their sales
+    function openClosersDrawer(name) {
+      const visits = getAllVisitsFlat().filter(v =>
+        v.sale === true && (v.closer === name || v.closer2 === name)
+      );
+      openDrawer('sold', visits, `Ventas de ${name}`);
+    }
+
+    function openSettersDrawer(name) {
+      const visits = getAllVisitsFlat().filter(v =>
+        v.sale === true && v.setter === name
+      );
+      openDrawer('sold', visits, `Ventas con ${name} como setter`);
+    }
+
+    // Click on day in table → open drawer with that day's visits
+    function openDayDrawer(date, location) {
+      const all = getAllVisitsFlat().filter(v => v._date === date && v._location === location);
+      openDrawer('all', all, `${formatDateShort(date)} · ${location}`);
+    }
+
+    // ============== DEMO DATA GENERATOR ==============
+
+    const DUMMY_NAMES = ['José García','María Rodríguez','Carlos Martínez','Ana Hernández','Luis López','Carmen González','Pedro Pérez','Sofía Sánchez','Roberto Ramírez','Diana Torres','Ximena Flores','Marco Reyes','Elena Cruz','Daniel Morales','Luisa Jiménez','Andrés Ortiz','Valeria Vargas','Miguel Castillo','Camila Romero','Sebastián Mendoza','Isabella Ríos','Mateo Castro','Lucía Alvarez','Diego Vega','Natalia Guzmán','Tomás Núñez','Renata Soto','Joaquín Aguilar','Florencia Méndez','Emilio Cordero','Antonio Silva','Patricia Herrera','Fernando Acosta','Beatriz Núñez','Ricardo Solís','Mónica Paredes','Esteban Rojas','Gabriela Mora','Alejandro Salas','Verónica Cabrera'];
+    const DUMMY_VEHICLES = ['2018 Honda Civic','2019 Toyota Corolla','2017 Nissan Sentra','2020 Hyundai Elantra','2018 Ford Focus','2019 Chevrolet Cruze','2020 Kia Forte','2018 Mazda 3','2019 Volkswagen Jetta','2017 Honda Accord','2019 Toyota Camry','2020 Nissan Altima','2018 Hyundai Sonata','2019 Ford Fusion','2020 Mazda CX-5','2019 Toyota RAV4','2020 Honda CR-V','2018 Nissan Rogue','2019 Hyundai Tucson','2020 Kia Sportage','2019 Chevrolet Equinox','2018 Ford Escape','2017 Toyota Highlander'];
+    const DUMMY_LENDERS = ['Westlake Financial','Western Funding','OneMain Financial Group LLC','Exeter Finance','Veros Credit LLC','Strike Acceptance','Lendbuzz Funding LLC','Lobel Financial','CapitalOne','Global Lending Services','Carvant Financial LLC','Cash'];
+    const DUMMY_CLOSERS = ['María','Juan','Carlos','Laura','Pedro','Elena','Roberto','Sofía'];
+    const DUMMY_SETTERS = ['Diego','Camila','Andrés','Valeria','Miguel','Ana','Lucía','Mateo','N/A','N/A','N/A'];
+    const DUMMY_SOURCES = ['Marketing','Marketing','Marketing','Facebook Marketplace','Facebook Marketplace','Others'];
+    const DUMMY_SUBMITTERS = ['Carlos','María','Admin'];
+    const DUMMY_AREA_CODES = ['407','321','689','386','754','786'];
+
+    function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function genPhone() {
+      return `${rnd(DUMMY_AREA_CODES)}-${rndInt(200,999)}-${rndInt(1000,9999)}`;
+    }
+
+    function genVisit() {
+      const visit = {
+        phone: genPhone(),
+        name: rnd(DUMMY_NAMES),
+        source: rnd(DUMMY_SOURCES),
+        setter: rnd(DUMMY_SETTERS),
+        closer: rnd(DUMMY_CLOSERS),
+        closer2: Math.random() < 0.25 ? rnd(DUMMY_CLOSERS) : 'N/A',
+        applied: null,
+        result: null,
+        sale: null
+      };
+
+      const applies = Math.random() < 0.62;
+      visit.applied = applies;
+
+      if (applies) {
+        const approves = Math.random() < 0.72;
+        visit.result = approves ? 'approved' : 'denied';
+
+        if (approves) {
+          const sells = Math.random() < 0.5;
+          visit.sale = sells;
+
+          if (sells) {
+            visit.deal_number = String(rndInt(10000, 99999));
+            visit.net_profit = rndInt(1500, 5500);
+            visit.lender = rnd(DUMMY_LENDERS);
+            visit.vehicle = rnd(DUMMY_VEHICLES);
+            visit.down_collected = rndInt(500, 3500);
+            visit.down_deferred = Math.random() < 0.35 ? rndInt(200, 1500) : 0;
+          }
+        }
+      }
+
+      return visit;
+    }
+
+    function genReport(date, location) {
+      const numVisits = rndInt(5, 14);
+      const visits = [];
+      const usedNames = new Set();
+      while (visits.length < numVisits) {
+        const v = genVisit();
+        if (!usedNames.has(v.name)) {
+          usedNames.add(v.name);
+          visits.push(v);
+        }
+      }
+      return {
+        date,
+        location,
+        visits,
+        submitted_by: rnd(DUMMY_SUBMITTERS),
+        submitted_at: new Date(date + 'T17:30:00').toISOString()
+      };
+    }
+
+    function seedDemoData() {
+      if (!confirm('¿Cargar 3 semanas de data demo (Orlando + Kissimmee)?\n\nEsto sobreescribe reportes existentes en esos días.')) return;
+      const today = new Date();
+      let count = 0;
+      for (let daysAgo = 0; daysAgo < 21; daysAgo++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - daysAgo);
+        const dateISO = d.toISOString().split('T')[0];
+        // Sundays sometimes skipped (less common to report)
+        if (d.getDay() === 0 && Math.random() < 0.4) continue;
+        for (const loc of ['Orlando', 'Kissimmee']) {
+          if (Math.random() < 0.92) {
+            const r = genReport(dateISO, loc);
+            localStorage.setItem(`ar_report_${dateISO}_${loc.toLowerCase()}`, JSON.stringify(r));
+            count++;
+          }
+        }
+      }
+      loadData();
+      alert(`Se generaron ${count} reportes demo entre ambas locaciones.`);
+    }
+
+    function clearAllData() {
+      if (!confirm('¿Borrar TODOS los reportes (incluso los reales)? No se puede deshacer.')) return;
+      let count = 0;
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('ar_report_')) {
+          localStorage.removeItem(key);
+          count++;
+        }
+      }
+      loadData();
+      alert(`Borrados ${count} reportes.`);
+    }
+
+    // ============== HOOK INTO loadData ==============
+
+    const _origLoadData = loadData;
+    loadData = function() {
+      _origLoadData();
+      // Update data count
+      const total = loadAllReports().length;
+      document.getElementById('data-count').textContent = `${total} reporte${total !== 1 ? 's' : ''} en storage`;
+
+      // Make daily table rows clickable
+      const tbody = document.getElementById('daily-tbody');
+      tbody.querySelectorAll('tr[data-date]').forEach(tr => {
+        const date = tr.dataset.date;
+        const loc = tr.dataset.location;
+        if (date && loc) {
+          tr.classList.add('expandable');
+          tr.onclick = () => openDayDrawer(date, loc);
+        }
+      });
+
+      // Make performers clickable
+      document.querySelectorAll('#top-closers .performer').forEach(el => {
+        const name = el.dataset.name;
+        if (name) el.onclick = () => openClosersDrawer(name);
+      });
+      document.querySelectorAll('#top-setters .performer').forEach(el => {
+        const name = el.dataset.name;
+        if (name) el.onclick = () => openSettersDrawer(name);
+      });
+    };
+  </script>
+</body>
+</html>
