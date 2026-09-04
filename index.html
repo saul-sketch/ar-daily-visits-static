@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="form-version" content="2026-09-02-cerrador-obligatorio">
+  <meta name="form-version" content="2026-09-04-ads-personales">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <title>Auto Republic — Reporte Diario de Visitas</title>
@@ -2021,7 +2021,13 @@
               <label class="field-label">Source<span class="req">*</span></label>
               <select class="field-select" data-field="source" onchange="updateRow(${index}, 'source', this.value)">
                 <option value="">Seleccionar...</option>
-                <option value="Marketing">Marketing</option>
+                <!-- "Marketing" se guarda igual que siempre y ahora se lee "AR Marketing":
+                     el nombre cambió, el dato no. Renombrarlo en la base habría obligado a
+                     reescribir los 1.189 reportes de ventas, que es el registro de la
+                     empresa; no vale el riesgo por una palabra. Todo lo anterior ERA
+                     marketing de AR, así que la etiqueta es exacta hacia atrás también. -->
+                <option value="Marketing">AR Marketing (lo paga la empresa)</option>
+                <option value="Ads personales">Ads personales (los paga el vendedor)</option>
                 <option value="Facebook Marketplace">Facebook Marketplace</option>
                 <option value="Others">Others</option>
               </select>
@@ -3302,7 +3308,7 @@
         if (v.scheduled_by === 'Walk-in') return 'Others';
         // Legacy fallback (visits sin scheduled_by)
         const hasSetter = v.setter && v.setter.trim() && !isNA(v.setter);
-        const fromCC = v.source === 'Marketing' || v.source === 'Facebook Marketplace';
+        const fromCC = v.source === 'Marketing' || v.source === 'Ads personales' || v.source === 'Facebook Marketplace';
         if (hasSetter || fromCC) return 'Setter';
         return 'Others';
       };
