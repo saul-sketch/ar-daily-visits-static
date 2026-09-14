@@ -1380,6 +1380,7 @@
         <span class="dot"></span>
         <span id="footer-counter-text">0 de 0 completas</span>
       </div>
+      <div id="autoguardado" style="display:none;font-size:12px;color:#16a34a;font-weight:600;"></div>
       <div style="display:flex; gap:10px;">
         <button class="btn btn-reset" onclick="resetForm()">Empezar de nuevo</button>
         <button class="btn btn-submit" onclick="submitForm()">
@@ -1700,9 +1701,7 @@
       updateLocationPill();
       document.getElementById('location-screen').style.display = 'none';
       await Promise.all([refreshTodayCache(), refreshAgentsCache(), refreshCrmRoster()]);
-      const existing = loadTodaysReport();
-      if (existing) showAlreadySent(existing);
-      else showStartScreen();
+      mostrarSegunHoy();
     }
 
     function updateLocationPill() {
@@ -1717,7 +1716,8 @@
     }
 
     function changeLocation() {
-      if (!confirm('¿Cambiar de locación? Si tenías un reporte en proceso, se perderá lo no guardado.')) return;
+      if (!confirm('¿Cambiar de locación? Lo que llevas de esta tienda queda guardado en este teléfono.')) return;
+      guardarBorrador();
       localStorage.removeItem('ar_location');
       currentLocation = null;
       editMode = false;
@@ -1801,9 +1801,7 @@
         updateLocationPill();
         // CRITICAL: also refresh agents cache so closer/setter dropdowns aren't empty
         await Promise.all([refreshTodayCache(), refreshAgentsCache()]);
-        const existing = loadTodaysReport();
-        if (existing) showAlreadySent(existing);
-        else showStartScreen();
+        mostrarSegunHoy();
       } else {
         showLocationScreen();
       }
@@ -1846,6 +1844,7 @@
     function editReport() {
       const saved = loadTodaysReport();
       if (!saved) return;
+      _tocado = false;
       editMode = true;
       document.getElementById('already-sent-screen').style.display = 'none';
       document.getElementById('main-form').style.display = 'block';
@@ -1898,6 +1897,7 @@
     }
 
     function cancelEdit() {
+      borrarBorrador();
       const existing = loadTodaysReport();
       if (existing) showAlreadySent(existing);
       else showStartScreen();
@@ -1919,6 +1919,7 @@
 
     async function startReport() {
       editMode = false;
+      _tocado = false;
       // Ensure agents cache is loaded BEFORE rendering cards
       const hasClosers = currentLocation && (_agentsCache.closers[currentLocation] || []).length > 0;
       const hasSetters = (_agentsCache.setters || []).length > 0;
@@ -2791,10 +2792,12 @@
       counter.classList.remove('complete', 'incomplete');
       if (rows.length > 0 && completed === rows.length) counter.classList.add('complete');
       else if (rows.length > 0) counter.classList.add('incomplete');
+      guardarBorradorPronto();
     }
 
     function resetForm() {
       if (!confirm('¿Empezar de nuevo? Se perderán todos los datos.')) return;
+      borrarBorrador();
       showStartScreen();
       showToast('Formulario reiniciado');
     }
@@ -3059,6 +3062,7 @@
       try {
         const saved = await saveReportToStorage(pendingPayload);
         pendingPayload = saved;
+        borrarBorrador();          // ya quedó enviado: el borrador no hace falta
         const modal = document.querySelector('#summary-modal .modal');
         modal.setAttribute('data-state', 'sent');
         const icon = modal.querySelector('.icon-sent');
@@ -3423,6 +3427,92 @@
         showStartScreen();
       }
     }
+
+    /* ── Borrador automático ─────────────────────────────────────────────────
+       El reporte se llena durante el día, visita por visita. Antes, si cerraban la
+       página, se les apagaba el teléfono o se iba el internet sin haberlo enviado, se
+       perdía todo. Ahora cada cambio se guarda solo en este teléfono (por día y por
+       tienda) y al volver a entrar aparece tal como lo dejaron. Se borra al enviar. */
+    const BORRADOR_PREFIJO = 'ar_borrador_';
+    const borradorKey = () => `${BORRADOR_PREFIJO}${todayKey()}_${currentLocation}`;
+    let _borradorTimer = null;
+    // Solo se guarda cuando alguien de verdad tocó algo: abrir "Editar" sin cambiar
+    // nada no debe dejar un borrador que al volver esconda el "ya enviado".
+    let _tocado = false;
+
+    function leerBorrador() {
+      try {
+        const b = JSON.parse(localStorage.getItem(borradorKey()) || 'null');
+        return b && Array.isArray(b.rows) && b.rows.some(isFilled) ? b : null;
+      } catch (e) { return null; }
+    }
+    function guardarBorrador() {
+      if (!_tocado || !currentLocation || document.getElementById('main-form').style.display === 'none') return;
+      try {
+        if (!rows.some(isFilled)) { localStorage.removeItem(borradorKey()); pintarGuardado(null); return; }
+        const b = { rows: rows.map(r => ({ ...r })), editMode, at: new Date().toISOString(), por: currentUser };
+        localStorage.setItem(borradorKey(), JSON.stringify(b));
+        pintarGuardado(b.at);
+      } catch (e) { /* sin espacio o bloqueado: el formulario sigue funcionando igual */ }
+    }
+    function guardarBorradorPronto() {
+      clearTimeout(_borradorTimer);
+      _borradorTimer = setTimeout(guardarBorrador, 400);
+    }
+    function borrarBorrador() {
+      try { if (currentLocation) localStorage.removeItem(borradorKey()); } catch (e) {}
+      pintarGuardado(null);
+    }
+    // Los borradores de días pasados no sirven: se limpian solos.
+    function limpiarBorradoresViejos() {
+      try {
+        const hoy = todayKey();
+        Object.keys(localStorage).filter(k => k.startsWith(BORRADOR_PREFIJO) && !k.includes(hoy))
+          .forEach(k => localStorage.removeItem(k));
+      } catch (e) {}
+    }
+    function pintarGuardado(iso) {
+      const el = document.getElementById('autoguardado');
+      if (!el) return;
+      if (!iso) { el.style.display = 'none'; return; }
+      const h = new Date(iso).toLocaleTimeString('es-US', { hour: 'numeric', minute: '2-digit', hourCycle: 'h12' });
+      el.textContent = `✓ Guardado automático · ${h}`;
+      el.style.display = '';
+    }
+    function restaurarBorrador(b) {
+      editMode = !!b.editMode;
+      document.getElementById('location-screen').style.display = 'none';
+      document.getElementById('already-sent-screen').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('main-form').style.display = 'block';
+      document.getElementById('edit-banner').style.display = editMode ? 'flex' : 'none';
+      rows.length = 0;
+      document.getElementById('rows-container').innerHTML = '';
+      b.rows.forEach((d, i) => { createCard(i); Object.assign(rows[i], d); syncCardUI(i); });
+      visitCount = rows.length;
+      updateAddBtn();
+      updateStats();
+      pintarGuardado(b.at);
+      _tocado = true;
+      showToast('Recuperamos lo que llevabas del reporte de hoy');
+    }
+    // Qué mostrar al entrar: lo que quedó a medias gana sobre la pantalla de inicio.
+    function mostrarSegunHoy() {
+      limpiarBorradoresViejos();
+      const existing = loadTodaysReport();
+      const b = leerBorrador();
+      if (b && (!existing || b.editMode)) return restaurarBorrador(b);
+      if (existing) showAlreadySent(existing);
+      else showStartScreen();
+    }
+    // Cualquier cosa que escriban o elijan en las visitas se guarda.
+    const alTocar = () => { _tocado = true; guardarBorradorPronto(); };
+    ['input', 'change', 'click'].forEach(ev =>
+      document.getElementById('rows-container').addEventListener(ev, alTocar));
+    document.getElementById('add-btn').addEventListener('click', alTocar);
+    // Al salir de la página o esconderla (cambiar de app), se guarda al instante.
+    document.addEventListener('visibilitychange', () => { if (document.hidden) guardarBorrador(); });
+    window.addEventListener('pagehide', guardarBorrador);
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
