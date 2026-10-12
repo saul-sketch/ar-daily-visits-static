@@ -1222,6 +1222,75 @@
     .btn-google:active { background: #f1f5f9; }
     .btn-google:disabled { opacity: 0.6; cursor: default; }
     .btn-google svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+    /* ===== Teléfono: tamaños táctiles y de letra (también en horizontal) ===== */
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+      .field-label, .opt, .fni-divider-text, .section-title, .header .date-badge .month-year, .login-hint { font-size: 12px; }
+      .stat-item .stat-label { font-size: 12px; letter-spacing: 0.3px; }
+      .field-input, .field-select, .login-card input[type="password"], #add-agent-input { font-size: 16px !important; }
+      .field-input, .field-select { min-height: 46px; padding-top: 11px; padding-bottom: 11px; }
+      .field-select { padding-right: 34px; }
+      .field-input.money { padding-left: 26px; }
+      .money-wrapper::before { font-size: 16px; }
+      .toggle-btn { min-height: 44px; font-size: 12px; }
+      .clear-btn { width: 40px; height: 40px; margin-right: -6px; font-size: 22px; }
+      .location-pill { min-height: 44px; }
+      .user-pill { min-height: 44px; padding: 0 2px 0 14px; gap: 4px; }
+      .logout-btn { width: 40px; height: 40px; justify-content: center; flex: 0 0 auto; }
+      .edit-banner .btn { min-height: 40px; }
+      .modal-footer .btn, .already-sent-actions .btn { min-height: 48px; justify-content: center; }
+      #add-agent-overlay button, #confirm-delete-overlay button, #manage-agents-overlay button { min-height: 44px; }
+      #crm-search-results button span:last-child:not(:first-child) { font-size: 12px !important; }
+      #visit-types-grid > div > div, #sale-types-grid > div > div { font-size: 12px !important; }
+      #visit-types-grid > div > div:nth-child(2), #sale-types-grid > div > div:nth-child(2) { font-size: 22px !important; }
+      .sale-name span { font-size: 12px !important; }
+      #add-agent-overlay > div, #confirm-delete-overlay > div, #manage-agents-overlay > div { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; }
+    }
+    @media (max-height: 500px) and (hover: none) and (pointer: coarse) {
+      #crm-search-results { max-height: 38vh !important; }
+    }
+
+    /* ===== Teléfono: acomodo vertical ===== */
+    @media (max-width: 768px) {
+      .header { position: relative; flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
+      .header .date-badge { position: absolute; top: 16px; right: 16px; padding: 6px 12px; }
+      .header .date-badge .day { font-size: 20px; }
+      .header-right { gap: 8px; flex-wrap: nowrap; }
+      .location-pill { flex: 0 0 auto; }
+      .user-pill { flex: 1 1 auto; min-width: 0; }
+      #user-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .toggle-group { display: flex; width: 100%; flex-wrap: nowrap !important; }
+      .toggle-btn { flex: 1 1 0; min-width: 0; padding: 10px 4px; white-space: normal; line-height: 1.2; letter-spacing: 0; }
+      .status-row { flex-direction: column; align-items: stretch; gap: 14px; }
+      .status-row .step-inline { min-width: 0 !important; }
+      .step.show, .step-fni.show { max-height: 1600px; }
+
+      .form-footer > div:last-child { width: 100%; flex-direction: column-reverse; }
+      .form-footer .btn { min-height: 48px; }
+
+      .edit-banner { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+
+      .location-screen, .start-screen { padding: 36px 18px 32px; }
+      .location-screen h2 { font-size: 20px; }
+      .location-screen .location-sub { margin-bottom: 24px; }
+      .location-cards { gap: 10px; }
+      .location-card { padding: 22px 10px; }
+      .already-sent { padding: 36px 16px 28px; }
+      .already-sent-stats { grid-template-columns: repeat(2, 1fr); }
+      .already-sent-stats .summary-stat:last-child { grid-column: 1 / -1 !important; }
+      .already-sent-actions { flex-direction: column-reverse; }
+      .already-sent-actions .btn { width: 100%; }
+
+      .toast { left: 16px; right: 16px; bottom: 16px; text-align: center; }
+
+      .modal-overlay { padding: 10px; }
+      .modal { max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); }
+      .modal-footer { position: sticky; bottom: 0; background: white; flex-direction: column-reverse; }
+      .modal-footer .btn { width: 100%; }
+      .sale-detail { white-space: normal; overflow-wrap: anywhere; }
+      #visit-types-grid > div, #sale-types-grid > div { padding: 10px !important; min-width: 0; }
+    }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
