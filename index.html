@@ -1695,6 +1695,19 @@
     const SUPA_URL = 'https://xwxjutaqouaeocvxawlw.supabase.co';
     const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3eGp1dGFxb3VhZW9jdnhhd2x3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTIxMzYsImV4cCI6MjA5MjYyODEzNn0.TOigRbaNL5z3Q7hd4llJyqrC6vZwn_-1R-5JudXtJmU';
     const SUPA_HEADERS = { apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}`, 'Content-Type': 'application/json' };
+    // Sesión firmada: la base de datos solo entrega datos a quien entró (contraseña,
+    // Google o el menú del CRM). El token viaja en el encabezado x-ar-ses.
+    const AR_SES_KEY = 'ar_ses_token';
+    function arPonerSesion(t){ if (!t) return false; SUPA_HEADERS['x-ar-ses'] = t; try{ localStorage.setItem(AR_SES_KEY, t); }catch(e){} return true; }
+    function arQuitarSesion(){ delete SUPA_HEADERS['x-ar-ses']; try{ localStorage.removeItem(AR_SES_KEY); }catch(e){} }
+    try{ const t = localStorage.getItem(AR_SES_KEY); if (t) SUPA_HEADERS['x-ar-ses'] = t; }catch(e){}
+    async function arSesionGoogle(jwt){
+      try{
+        const r = await fetch(`${SUPA_URL}/rest/v1/rpc/ar_sesion_google`, { method:'POST', headers:{ apikey: SUPA_ANON, Authorization: 'Bearer ' + jwt, 'Content-Type':'application/json' }, body:'{}' });
+        const t = await r.json();
+        return typeof t === 'string' && arPonerSesion(t);
+      }catch(e){ return false; }
+    }
     let _todayCache = null;
     let _agentsCache = { closers: { Orlando: [], Kissimmee: [] }, setters: [] };
 
@@ -1895,6 +1908,7 @@
           errorEl.classList.add('shake');
           return;
         }
+        arPonerSesion(data[0].token);
         currentUser = data[0].name;
         currentUserAccess = data[0].location_access || 'all';
         localStorage.setItem('ar_user', currentUser);
@@ -1932,6 +1946,7 @@
     async function logout() {
       if (!(await arConfirm('', { title: '¿Cerrar sesión?', okText: 'Cerrar sesión' }))) return;
       arGoogleSignOut();
+      arQuitarSesion();
       localStorage.removeItem('ar_user');
       currentUser = null;
       editMode = false;
@@ -3912,6 +3927,7 @@
           window._arGoogleDenied = true;
           return false;
         }
+        await arSesionGoogle(session.access_token);
         localStorage.setItem('ar_user', AR_GOOGLE_USER);
         return true;
       } catch (e) { arCleanOAuthUrl(); return false; }
@@ -3921,12 +3937,12 @@
     async function arSsoCheck() {
       const t = window.__arSsoToken; window.__arSsoToken = null;
       if (!t) return false;
-      if (localStorage.getItem('ar_user') === AR_GOOGLE_USER) return true; // ya está dentro como Saúl
+      if (localStorage.getItem('ar_user') === AR_GOOGLE_USER && SUPA_HEADERS['x-ar-ses']) return true; // ya está dentro como Saúl
       if (!arSupa) return false;
       try {
         const { data, error } = await arSupa.auth.getUser(t);
         const email = ((data && data.user && data.user.email) || '').toLowerCase().trim();
-        if (!error && email === AR_GOOGLE_EMAIL) { localStorage.setItem('ar_user', AR_GOOGLE_USER); return true; }
+        if (!error && email === AR_GOOGLE_EMAIL) { await arSesionGoogle(t); localStorage.setItem('ar_user', AR_GOOGLE_USER); return true; }
         if (!error && email) window._arGoogleDenied = true;
       } catch (e) {}
       return false;
@@ -3936,6 +3952,8 @@
     // Auth check on load — verify user still exists in DB
     (async () => {
       if (!(await arSsoCheck())) await arGoogleCheck();
+      // Sin sesión firmada no hay datos: se vuelve a entrar una vez.
+      if (!SUPA_HEADERS['x-ar-ses']) localStorage.removeItem('ar_user');
       const savedUser = localStorage.getItem('ar_user');
       if (!savedUser) {
       if (window._arGoogleDenied) arShowLoginError('Este correo no tiene acceso');
