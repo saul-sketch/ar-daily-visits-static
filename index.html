@@ -3251,7 +3251,9 @@
     }
 
     async function postDailyReportToDiscord(report) {
-      const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1507876233898229770/kEkI0jhN9bvKord4uFh-_Tk7woK8a3qGOA3MWhq-jQTKftKMU0fEsOH43R069Lf4izmB';
+      // Se publica por una función del servidor con la sesión del usuario: el webhook
+      // ya no vive en esta página pública (borrado el 06-nov por quedar expuesto).
+      const DISCORD_FN = `${SUPA_URL}/functions/v1/sales-report-discord`;
       const DISCORD_USER_SAUL = '1242195465760542723';
       const DISCORD_USER_CHARLES = '1468206071133900915';
 
@@ -3402,12 +3404,13 @@
       const ctrl = new AbortController();
       const tid = setTimeout(() => ctrl.abort(), 8000);
       try {
-        await fetch(DISCORD_WEBHOOK, {
+        const r = await fetch(DISCORD_FN, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          headers: SUPA_HEADERS,
+          body: JSON.stringify({ embeds: body.embeds }),
           signal: ctrl.signal
         });
+        if (!r.ok) throw new Error('discord ' + r.status);
       } finally {
         clearTimeout(tid);
       }
